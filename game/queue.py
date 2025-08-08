@@ -37,3 +37,5 @@ class Queue:
         except ValueError:
             raise QueueError()
         del self.queue[min(self.queue)][0]
+        if not self.queue[min(self.queue)]:
+            del self.queue[min(self.queue)]
