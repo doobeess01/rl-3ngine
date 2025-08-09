@@ -9,12 +9,8 @@ class Queue:
     def __init__(self):
         self.queue: dict = {}
 
-    @property
-    def front(self):
-        try:
-            return self.queue[min(self.queue)][0]
-        except ValueError:
-            raise QueueError()
+    def clear(self):
+        self.queue = {}
     
     def add(self, actor: Entity):
         try:
@@ -28,6 +24,13 @@ class Queue:
                 self.queue[row].remove(actor)
                 return
         raise QueueError()
+
+    @property
+    def front(self):
+        try:
+            return self.queue[min(self.queue)][0]
+        except ValueError:
+            raise QueueError()
 
     def move_front(self, time):
         try:

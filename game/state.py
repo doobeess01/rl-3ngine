@@ -6,7 +6,7 @@ from game.action import Action
 
 
 class State:
-    def __init__(self, keybindings):
+    def __init__(self, keybindings = {}):
         self.keybindings = keybindings
         self.parent = None
 

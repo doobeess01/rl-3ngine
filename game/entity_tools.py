@@ -30,9 +30,15 @@ def spawn_creature(template: Entity, position: Position, components: dict = {}, 
     return creature
 
 def kill(actor: Entity):
-    g.queue().remove(actor)
     log(f'{actor.components[Name]} dies!', colors.MSG_DEATH)
-    actor.clear()
+    if actor == g.player:
+        g.player_is_dead = True
+        g.queue().clear()
+        g.queue().add(g.player)
+        log('Press SPACE to accept your fate...', colors.MSG_DEATH)
+    else:
+        g.queue().remove(actor)
+        actor.clear()
 
 
 # Item tools

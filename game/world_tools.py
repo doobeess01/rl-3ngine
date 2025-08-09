@@ -23,6 +23,7 @@ def world_init():
     map_ = generate_map(map_shape)
 
     g.player = spawn_creature(creatures.PLAYER, Position(5,5,map_))
+    g.player_is_dead = False
     monster = spawn_creature(creatures.MONSTER, Position(50,50,map_))
 
     add_to_inventory(spawn_item(items.POTION, quantity=3), g.player)
@@ -34,6 +35,7 @@ def world_init():
 
 
 def enter_level(map_: tcod.ecs.Entity):
+    g.queue().clear()
     for e in g.registry.Q.all_of(tags=[map_, IsActor]):
         if e != g.player:
             g.queue().add(e)

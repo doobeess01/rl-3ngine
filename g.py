@@ -11,6 +11,7 @@ state: game.state.State
 
 registry: tcod.ecs.Registry = None
 player: tcod.ecs.Entity = None
+player_is_dead: bool = False
 
 def queue():
     try:

@@ -1,4 +1,4 @@
-from tcod.event import KeyDown, Quit
+from tcod.event import KeyDown, KeySym as K
 
 import g
 
@@ -152,7 +152,11 @@ class InGame(State):
     def on_event(self, event):
         action = super().on_event(event)
 
-        if action:
+        if g.player_is_dead:
+            match event:
+                case KeyDown(sym=K.SPACE):
+                    g.state = GameOver()
+        elif action:
             match action:
                 case ViewInventory():
                     self.enter_substate(ViewInventoryMenu())
@@ -174,4 +178,8 @@ class InGame(State):
         map_view_shape = (39,39)
         render_map(map_=player_pos.map_, screen_shape=map_view_shape, center=player_pos.ij)
         render_message_log((0,map_view_shape[0]+1), g.console.height-map_view_shape[0]-1)
-            
+
+
+class GameOver(State):
+    def on_draw(self):
+        g.console.print(0,0,'Game over')
