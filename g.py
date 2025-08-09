@@ -9,9 +9,11 @@ context: tcod.context.Context
 
 state: game.state.State
 
-registry: tcod.ecs.Registry
-
-player: tcod.ecs.Entity
+registry: tcod.ecs.Registry = None
+player: tcod.ecs.Entity = None
 
 def queue():
-    return registry[None].components[game.queue.Queue]
+    try:
+        return registry[None].components[game.queue.Queue]
+    except TypeError:
+        return

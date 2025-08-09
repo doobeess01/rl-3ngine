@@ -51,3 +51,8 @@ MapShape: Final = ('MapShape', tuple[int, int])
 
 
 Name: Final = ('Name', str)
+Description: Final = ('Description', str)
+
+MaxHP: Final = ('MaxHP', int)
+HP: Final = ('HP', int)
+UnarmedAttack: Final = ('UnarmedAttack', int)

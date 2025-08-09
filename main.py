@@ -4,6 +4,7 @@ import tcod
 import g
 
 from game.states import InGame
+from game.controller import Controller
 from game.world_tools import world_init
 
 
@@ -28,11 +29,17 @@ def main():
     tileset = tcod.tileset.load_tilesheet(FONT, 16, 16, tcod.tileset.CHARMAP_CP437)
     with tcod.context.new(console=g.console, tileset=tileset) as g.context:
         while True:
+            if g.queue():
+                actor = g.queue().front
+                while actor != g.player:
+                    action = actor.components[Controller](actor)
+                    action(actor)
+                    actor = g.queue().front
+
             draw()
 
             for event in tcod.event.wait():
                 g.state.on_event(event)
-                pass
 
 
 if __name__ == '__main__':

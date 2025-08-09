@@ -1,5 +1,5 @@
 from typing import Final
 
-IsPlayer: Final = 'IsPlayer'
+IsActor: Final = 'IsActor'
 IsCreature: Final = 'IsCreature'
 IsGhost: Final = 'IsGhost'
