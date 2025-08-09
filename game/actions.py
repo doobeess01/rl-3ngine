@@ -1,6 +1,6 @@
 import g
 
-from game.action import Action
+from game.action import Action, MetaAction
 from game.components import Position, Tiles
 from game.tags import IsCreature
 from game.tiles import TILES
@@ -21,11 +21,9 @@ class Directional(Action):
         for e in g.registry.Q.all_of(tags=[self.dest(actor), IsCreature]): return e  # There should be only one creature occupying a tile
 
 
-class Bump(Directional):
+class Bump(MetaAction, Directional):
     def __init__(self, direction: tuple[int, int]):
         super().__init__(direction)
-    def __call__(self, actor):
-        self.execute(actor)
     def execute(self, actor):
         creature = self.creature(actor)
         if creature:

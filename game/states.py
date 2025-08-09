@@ -24,6 +24,6 @@ class InGame(State):
 
     def on_draw(self):
         player_pos = g.player.components[Position]
-        map_view_shape = (39,39)
+        map_view_shape = (26,26)
         render_map(map_=player_pos.map_, screen_shape=map_view_shape, center=player_pos.ij)
             

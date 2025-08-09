@@ -31,7 +31,10 @@ def render_map(map_: tcod.ecs.Entity, screen_shape: tuple[int, int], center: tup
 
         in_bounds = 0 <= rendered_pos.x < screen_shape[1] and 0 <= rendered_pos.y < screen_shape[0]
 
-        if in_bounds and visible[pos.ij] == (IsGhost in e.tags):
+        offset = (0 if camera[1] > 0 else camera[1], 0 if camera[0] > 0 else camera[0])
+        rendered = visible[(rendered_pos+offset).ij] != (IsGhost in e.tags)
+
+        if in_bounds and rendered:
             g.console.rgb[["ch", "fg"]][rendered_pos.ij] = graphic.ch, graphic.fg
 
     g.console.rgb["fg"][console_slices][not_visible] //= 2

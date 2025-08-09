@@ -22,9 +22,7 @@ class Position:
 
     def __hash__(self):
         return hash((self.x, self.y))
-
-    def __iter__(self):
-        return (self.x, self.y)
+    
     
 @callbacks.register_component_changed(component=Position)
 def on_position_changed(entity: Entity, old: Position | None, new: Position | None) -> None:
