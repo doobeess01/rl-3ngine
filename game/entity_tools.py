@@ -1,19 +1,27 @@
-from tcod.ecs import Entity, callbacks
+from tcod.ecs import Entity, callbacks, IsA
 from typing import Iterable
 
 import g
 
-from game.components import Position, Name, HP, MaxHP
-from game.tags import IsCreature, IsActor
+from game.components import Position, Name, HP, MaxHP, Quantity
+from game.tags import IsCreature, IsActor, IsStackable, CarriedBy
 from game.message_log import log
 import game.colors as colors
 
-def spawn_entity(template: Entity, position: Position, components: dict = {}, tags: set = {}):
+
+# Generic tools
+
+def spawn_entity(template: Entity, position: Position = None, components: dict = {}, tags: set = {}) -> Entity:
     e = template.instantiate()
-    e.components |= {Position: position}|components
+    if position:
+        e.components[Position] = position
+    e.components |= components
     e.tags |= tags
+
     return e
 
+
+# Creature tools
 
 def spawn_creature(template: Entity, position: Position, components: dict = {}, tags: set = {}) -> Entity:
     creature = spawn_entity(template, position=position, components=components, tags=tags)
@@ -27,9 +35,53 @@ def kill(actor: Entity):
     actor.clear()
 
 
+# Item tools
+
+def spawn_item(template: Entity, position: Position = None, quantity: int = 1, components: dict = {}, tags: set = {}):
+    if position:
+        for e in g.registry.Q.all_of(tags=[position, IsStackable], relations=[(IsA, template)]):
+            # If there is an identical stackable item on the same square, add to its quantity
+            e.components[Quantity] += quantity
+            return e
+    return spawn_entity(template, position=position, components={Quantity: quantity}|components, tags=tags)
+
+def inventory(entity: Entity, components: list = [], tags: list[str] = []):
+    '''
+    Return the inventory of an entity (all items with the IsIn relation to it)
+    '''
+    return [e for e in g.registry.Q.all_of(relations=[(CarriedBy, entity)], components=components, tags=tags)]
+
+def add_to_inventory(item: Entity, actor: Entity):
+    '''
+    Add an item to an entity's inventory. This modifies the entities' CarriedBy relation.
+    '''
+    stackable_inventory = inventory(actor, tags=[IsStackable])
+    for other_item in stackable_inventory:
+        if other_item.relation_tag[IsA] == item.relation_tag[IsA]:
+            other_item.components[Quantity] += item.components[Quantity]
+            item.clear()
+            return
+    item.relation_tag[CarriedBy] = actor
+    if item.components.get(Position, 0):
+        del item.components[Position]
+
+def drop(item: Entity):
+    position = item.relation_tag[CarriedBy].components[Position]
+    quantity = item.components[Quantity]
+    for e in g.registry.Q.all_of(tags=[position, IsStackable], relations=[(IsA, item.relation_tag[IsA])]):
+        # If there is an identical stackable item on the same square, add to its quantity
+        e.components[Quantity] += quantity
+        item.clear()
+        return e
+    else:
+        item.components[Position] = position
+        del item.relation_tag[CarriedBy]
+        return item
+
+
 @callbacks.register_component_changed(component=Position)
 def on_position_changed(entity: Entity, old: Position | None, new: Position | None) -> None:
-    '''Aesthetically pleasing means of finding entity at any given coordinate.'''
+    '''Set Position and map_ tags for easy lookup by-position and by-map.'''
     if old == new:
         return
     if old:

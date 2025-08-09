@@ -6,13 +6,13 @@ from game.procgen import generate_map
 from game.components import Position
 from game.tags import IsActor
 from game.queue import Queue
-from game.entity_tools import spawn_creature
+from game.entity_tools import spawn_creature, spawn_item, add_to_inventory
 from game.message_log import MessageLog, log
 
 
 def world_init():
     g.registry = tcod.ecs.Registry()
-    from game.templates import creatures
+    from game.templates import creatures, items
 
     g.registry[None].components[Queue] = Queue()
     g.registry[None].components[MessageLog] = MessageLog()
@@ -24,7 +24,10 @@ def world_init():
 
     g.player = spawn_creature(creatures.PLAYER, Position(5,5,map_))
     monster = spawn_creature(creatures.MONSTER, Position(50,50,map_))
-    
+
+    add_to_inventory(spawn_item(items.POTION, quantity=3), g.player)
+    add_to_inventory(spawn_item(items.POTION, quantity=4), g.player)
+
     enter_level(map_)
 
 

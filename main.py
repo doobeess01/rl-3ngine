@@ -39,7 +39,9 @@ def main():
             draw()
 
             for event in tcod.event.wait():
-                g.state.on_event(event)
+                action = g.state.on_event(event)
+                if action:
+                    action(g.player)
 
 
 if __name__ == '__main__':

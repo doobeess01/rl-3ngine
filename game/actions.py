@@ -52,3 +52,19 @@ class Melee(Action):
         message_color = colors.MSG_ATTACK if actor != g.player else colors.DEFAULT
         log(f'{actor.components[Name]} attacks {self.target.components[Name]} for {damage} damage!', message_color)
         self.target.components[HP] -= damage
+
+
+# Pseudo-actions handled in states.py
+
+class ViewInventory:
+    pass
+
+class MoveCursor:
+    def __init__(self, direction: int):
+        self.direction = direction
+
+class Select:
+    pass
+
+class Exit:
+    pass

@@ -25,4 +25,15 @@ IN_GAME = {
 
     K.PERIOD: Wait(),
     K.N5: Wait(),
+
+    K.I: ViewInventory(),
+}
+
+MENU = {
+    K.UP: MoveCursor(-1),
+    K.DOWN: MoveCursor(1),
+
+    K.RETURN: Select(),
+
+    K.ESCAPE: Exit(),
 }
