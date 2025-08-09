@@ -12,9 +12,9 @@ import game.colors as colors
 TILES = np.asarray(
     [
         ("void", (ord(" "), colors.BLACK, colors.BLACK), 0, True),
-        ("wall", (ord("#"), colors.WHITE, colors.BLACK), 0, False),
+        ("wall", (ord("#"), colors.GRAY, colors.BLACK), 0, False),
         ("window", (ord('#'), colors.LIGHT_BLUE, colors.BLACK), 0, False),
-        ("floor", (ord("."), colors.WHITE, colors.BLACK), 1, True),
+        ("floor", (ord("."), colors.GRAY, colors.BLACK), 1, True),
     ],
     dtype=[
         ("name", object),

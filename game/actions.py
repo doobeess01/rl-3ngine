@@ -2,9 +2,10 @@ import g
 
 from game.action import Action, MetaAction
 from game.components import Position, Name, Tiles, UnarmedAttack, HP
-from game.tags import IsCreature
+from game.tags import IsCreature, CarriedBy
 from game.tiles import TILES
 from game.message_log import log
+from game.entity_tools import add_to_inventory, drop
 
 import game.colors as colors
 
@@ -54,6 +55,23 @@ class Melee(Action):
         self.target.components[HP] -= damage
 
 
+class PickupItem(Action):
+    def __init__(self, item):
+        super().__init__()
+        self.item = item
+    def execute(self, actor):
+        log(f'{actor.components[Name]} picks up the {self.item.components[Name]}')
+        add_to_inventory(self.item, actor)
+
+class DropItem(Action):
+    def __init__(self, item):
+        super().__init__()
+        self.item = item
+    def execute(self, actor):
+        log(f'{self.item.relation_tag[CarriedBy].components[Name]} drops the {self.item.components[Name]}')
+        drop(self.item)
+
+
 # Pseudo-actions handled in states.py
 
 class ViewInventory:
@@ -67,4 +85,10 @@ class Select:
     pass
 
 class Exit:
+    pass
+
+class PickupItemDispatch:
+    pass
+
+class DropItems:
     pass

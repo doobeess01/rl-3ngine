@@ -25,14 +25,21 @@ def new_item(
     return item
 
 
+SWORD = new_item(
+    category = 0,
+    name = 'sword',
+    graphic = Graphic(ord('/'), colors.DARK_PURPLE, colors.BLACK),
+    desc = 'a sword.',
+    stackable=False,
+)
 POTION = new_item(
-    category = 3,
+    category = 2,
     name = 'potion',
-    graphic = Graphic(ord('?'), colors.LIGHT_BLUE, colors.BLACK),
+    graphic = Graphic(ord('!'), colors.LIGHT_BLUE, colors.BLACK),
     desc = 'a potion.',
 )
 SCROLL = new_item(
-    category = 4,
+    category = 3,
     name = 'scroll',
     graphic = Graphic(ord('?'), colors.LIGHT_BLUE, colors.BLACK),
     desc = 'a scroll.',

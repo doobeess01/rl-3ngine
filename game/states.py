@@ -6,9 +6,11 @@ from game.action import Action, Pass
 from game.state import State
 from game.rendering import render_map, render_message_log
 from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES
-from game.actions import ViewInventory, MoveCursor, Select, Exit
+from game.actions import ViewInventory, MoveCursor, Select, Exit, PickupItem, PickupItemDispatch, DropItems, DropItem
 from game.text import Text
 from game.entity_tools import inventory
+from game.tags import IsItem
+from game.message_log import log
 import game.keybindings as keybindings
 import game.colors as colors
 
@@ -57,7 +59,7 @@ class ItemList(Menu):
         self.title = title
         self.action = action
         self.no_items_text = no_items_text
-        self.items = self.get_items()
+        self.items = []
         super().__init__()
 
     def get_options(self) -> list[tuple[Text, Action]]:
@@ -72,18 +74,19 @@ class ItemList(Menu):
                     sorted_items[category].append(item)
                 else:
                     sorted_items[category] = [item]
+            print(sorted_items)
             # Add options
-            for i in range(max(sorted_items)):
-                if sorted_items.get(i+1, 0):
-                    for item in sorted_items[i+1]:
-                        name = item.components[Name]
-                        quantity = item.components[Quantity]
-                        graphic = item.components[Graphic]
-                        options.append((
-                            Text(name+(f' (x{quantity})' if quantity > 1 else ''), graphic.fg, graphic.bg),
-                            self.action(item)
-                        ))
-                        self.items.append(item)
+            for category in sorted(sorted_items.keys()):
+                for item in sorted_items[category]:
+                    name = item.components[Name]
+                    quantity = item.components[Quantity]
+                    graphic = item.components[Graphic]
+                    options.append((
+                        Text(name+(f' (x{quantity})' if quantity > 1 else ''), graphic.fg, graphic.bg),
+                        self.action(item)
+                    ))
+                    self.items.append(item)
+
         return options
     
     def get_items(self):
@@ -110,11 +113,32 @@ class ItemList(Menu):
             g.console.print(0,2,self.no_items_text)
 
 
-class Inventory(ItemList):
+class ViewInventoryMenu(ItemList):
     def __init__(self):
         super().__init__(
             title='Inventory', 
             action=Pass, 
+            no_items_text='You are carrying nothing.'
+        )
+    def get_items(self):
+        return inventory(g.player)
+
+
+class PickupItemsMenu(ItemList):
+    def __init__(self):
+        super().__init__(
+            title='Pick up which?',
+            action=PickupItem,
+        )
+    def get_items(self):
+        return [e for e in g.registry.Q.all_of(tags=[g.player.components[Position], IsItem])]
+
+
+class DropItemsMenu(ItemList):
+    def __init__(self):
+        super().__init__(
+            title='Drop which?',
+            action=DropItem,
             no_items_text='You are carrying nothing.'
         )
     def get_items(self):
@@ -131,13 +155,23 @@ class InGame(State):
         if action:
             match action:
                 case ViewInventory():
-                    self.enter_substate(Inventory())
+                    self.enter_substate(ViewInventoryMenu())
+                case PickupItemDispatch():
+                    items = PickupItemsMenu().get_items()
+                    if len(items) > 1:
+                        self.enter_substate(PickupItemsMenu())
+                    elif items:
+                        return PickupItem(items[0])
+                    else:
+                        log('There is nothing to pick up here.', colors.MSG_FAILED_ACTION)
+                case DropItems():
+                    self.enter_substate(DropItemsMenu())
                 case _:
                     return action
 
     def on_draw(self):
         player_pos = g.player.components[Position]
-        map_view_shape = (26,26)
+        map_view_shape = (39,39)
         render_map(map_=player_pos.map_, screen_shape=map_view_shape, center=player_pos.ij)
         render_message_log((0,map_view_shape[0]+1), g.console.height-map_view_shape[0]-1)
             

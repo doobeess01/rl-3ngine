@@ -26,7 +26,9 @@ def world_init():
     monster = spawn_creature(creatures.MONSTER, Position(50,50,map_))
 
     add_to_inventory(spawn_item(items.POTION, quantity=3), g.player)
-    add_to_inventory(spawn_item(items.POTION, quantity=4), g.player)
+    spawn_item(items.POTION, Position(1,1,map_), quantity=4)
+    spawn_item(items.SWORD, Position(2,2,map_))
+    spawn_item(items.SWORD, Position(3,3,map_))
 
     enter_level(map_)
 

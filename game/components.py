@@ -47,9 +47,9 @@ UnarmedAttack: Final = ('UnarmedAttack', int)
 Quantity: Final = ('Quantity', int)
 
 ItemCategory: Final = ('ItemCategory', int)
-ITEM_CATEGORIES: Final = {
-    1: 'weapons',
-    2: 'armor',
-    3: 'potions',
-    4: 'scrolls',
-}
+ITEM_CATEGORIES: Final = [
+    'weapons',
+    'armor',
+    'potions',
+    'scrolls',
+]

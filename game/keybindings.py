@@ -27,6 +27,8 @@ IN_GAME = {
     K.N5: Wait(),
 
     K.I: ViewInventory(),
+    K.COMMA: PickupItemDispatch(),
+    K.D: DropItems(),
 }
 
 MENU = {
