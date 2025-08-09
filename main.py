@@ -4,7 +4,7 @@ import tcod
 import g
 
 from game.states import InGame
-from game.init import world_init
+from game.world_tools import world_init
 
 
 CONSOLE_DIMENSIONS = (50,50)
