@@ -47,4 +47,9 @@ class Graphic:
 
 
 Tiles: Final = ('Tiles', np.ndarray)
+VisibleTiles: Final = ('VisibleTiles', np.ndarray)
+MemoryTiles: Final = ('MemoryTiles', np.ndarray)
 MapShape: Final = ('MapShape', tuple[int, int])
+
+
+Name: Final = ('Name', str)
