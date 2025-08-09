@@ -8,9 +8,12 @@ from game.fov import update_fov
 from game.components import Position, Graphic, Tiles, MapShape, VisibleTiles, MemoryTiles
 from game.tags import IsGhost
 from game.tiles import TILES
+from game.message_log import MessageLog
 
 
 def render_map(map_: tcod.ecs.Entity, screen_shape: tuple[int, int], center: tuple[int,int]):
+    g.console.draw_frame(-1,-1,screen_shape[1]+2, screen_shape[0]+2)
+
     update_fov(g.player)
 
     camera = get_camera(screen_shape, center)
@@ -41,3 +44,7 @@ def render_map(map_: tcod.ecs.Entity, screen_shape: tuple[int, int], center: tup
 
     g.console.rgb["fg"][console_slices][not_visible] //= 2
     g.console.rgb["bg"][console_slices][not_visible] //= 2
+
+
+def render_message_log(position: tuple[int,int], rows):
+    g.registry[None].components[MessageLog].render(position, rows)

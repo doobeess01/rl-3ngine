@@ -3,8 +3,10 @@ from typing import Iterable
 
 import g
 
-from game.components import Position, HP, MaxHP
+from game.components import Position, Name, HP, MaxHP
 from game.tags import IsCreature, IsActor
+from game.message_log import log
+import game.colors as colors
 
 def spawn_entity(template: Entity, position: Position, components: dict = {}, tags: set = {}):
     e = template.instantiate()
@@ -21,7 +23,7 @@ def spawn_creature(template: Entity, position: Position, components: dict = {}, 
 
 def kill(actor: Entity):
     g.queue().remove(actor)
-    # log(f'{actor.components[Name]} dies!', colors.MSG_DEATH)
+    log(f'{actor.components[Name]} dies!', colors.MSG_DEATH)
     actor.clear()
 
 
