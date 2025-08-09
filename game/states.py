@@ -1,4 +1,5 @@
 from tcod.event import KeyDown, KeySym as K
+from tcod.ecs import Entity
 
 import g
 
@@ -6,10 +7,10 @@ from game.action import Action, Pass
 from game.state import State
 from game.rendering import render_map, render_message_log
 from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES
+from game.tags import IsItem, Equipped
 from game.actions import ViewInventory, MoveCursor, Select, Exit, PickupItem, PickupItemDispatch, DropItems, DropItem
 from game.text import Text
 from game.entity_tools import inventory
-from game.tags import IsItem
 from game.message_log import log
 import game.keybindings as keybindings
 import game.colors as colors
@@ -54,6 +55,18 @@ class Menu(State):
         return []
 
 
+def sort_items(items: list[Entity]) -> dict[int: list[Entity]]:
+    '''Returns a dictionary of sorted items by ItemCategory.'''
+    sorted_items = {}
+    for item in items:
+        category = item.components[ItemCategory] if Equipped not in item.tags else -1
+        if sorted_items.get(category, 0):
+            sorted_items[category].append(item)
+        else:
+            sorted_items[category] = [item]
+    return sorted_items
+
+
 class ItemList(Menu):
     def __init__(self, title: str, action: Action = Pass, no_items_text = '[No items]'):
         self.title = title
@@ -62,30 +75,33 @@ class ItemList(Menu):
         self.items = []
         super().__init__()
 
+    def add_option_for_item(self, item: Entity, options: list):
+        name = item.components[Name]
+        quantity = item.components[Quantity]
+        graphic = item.components[Graphic]
+        options.append((
+            Text(name+(f' (x{quantity})' if quantity > 1 else '')+(' (equipped)' if Equipped in item.tags else ''), graphic.fg, graphic.bg),
+            self.action(item)
+        ))
+        self.items.append(item)
+        return options
+
     def get_options(self) -> list[tuple[Text, Action]]:
         options = []
         items = self.get_items()
         if items:
-            sorted_items = {}
             # Sort items by category
-            for item in items:
-                category = item.components[ItemCategory]
-                if sorted_items.get(category, 0):
-                    sorted_items[category].append(item)
-                else:
-                    sorted_items[category] = [item]
-            print(sorted_items)
+            sorted_items = sort_items(items)
             # Add options
             for category in sorted(sorted_items.keys()):
-                for item in sorted_items[category]:
-                    name = item.components[Name]
-                    quantity = item.components[Quantity]
-                    graphic = item.components[Graphic]
-                    options.append((
-                        Text(name+(f' (x{quantity})' if quantity > 1 else ''), graphic.fg, graphic.bg),
-                        self.action(item)
-                    ))
-                    self.items.append(item)
+                if category == -1:
+                    sorted_equipped_items = sort_items(sorted_items[category])
+                    for category in sorted(sorted_equipped_items.keys()):
+                        for item in sorted_equipped_items[category]:
+                            self.add_option_for_item(item, options)
+                else:
+                    for item in sorted_items[category]:
+                        self.add_option_for_item(item, options)
 
         return options
     
@@ -100,7 +116,7 @@ class ItemList(Menu):
             for i,option in enumerate(self.options):
                 item = self.items[i]
                 previous_item = self.items[i-1]
-                category = item.components[ItemCategory]
+                category = item.components[ItemCategory] if Equipped not in item.tags else -1
                 previous_category = previous_item.components[ItemCategory]
                 if category != previous_category or i==0:
                     line_counter += 1

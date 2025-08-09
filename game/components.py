@@ -45,11 +45,13 @@ HP: Final = ('HP', int)
 UnarmedAttack: Final = ('UnarmedAttack', int)
 
 Quantity: Final = ('Quantity', int)
-
 ItemCategory: Final = ('ItemCategory', int)
 ITEM_CATEGORIES: Final = [
     'weapons',
     'armor',
     'potions',
     'scrolls',
+
+    'equipped'  # Last slot is reserved for equipment; actually rendered first
 ]
+EquipmentSlot: Final = ('EquipmentSlot', str)

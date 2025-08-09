@@ -7,5 +7,6 @@ IsCreature: Final = 'IsCreature'
 IsItem: Final = 'IsItem'
 IsStackable: Final = 'IsStackable'
 CarriedBy: Final = 'CarriedBy'
+Equipped: Final = 'Equipped'
 
 IsGhost: Final = 'IsGhost'

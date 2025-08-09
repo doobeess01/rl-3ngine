@@ -3,8 +3,8 @@ from typing import Iterable
 
 import g
 
-from game.components import Position, Name, HP, MaxHP, Quantity
-from game.tags import IsCreature, IsActor, IsStackable, CarriedBy
+from game.components import Position, Name, HP, MaxHP, Quantity, EquipmentSlot
+from game.tags import IsCreature, IsActor, IsStackable, CarriedBy, Equipped
 from game.message_log import log
 import game.colors as colors
 
@@ -66,14 +66,17 @@ def add_to_inventory(item: Entity, actor: Entity):
         if other_item.relation_tag[IsA] == item.relation_tag[IsA]:
             other_item.components[Quantity] += item.components[Quantity]
             item.clear()
-            return
+            return other_item
     item.relation_tag[CarriedBy] = actor
     if item.components.get(Position, 0):
         del item.components[Position]
+    return item
 
 def drop(item: Entity):
     position = item.relation_tag[CarriedBy].components[Position]
     quantity = item.components[Quantity]
+    if Equipped in item.tags:
+        item.tags.remove(Equipped)
     for e in g.registry.Q.all_of(tags=[position, IsStackable], relations=[(IsA, item.relation_tag[IsA])]):
         # If there is an identical stackable item on the same square, add to its quantity
         e.components[Quantity] += quantity
@@ -83,6 +86,13 @@ def drop(item: Entity):
         item.components[Position] = position
         del item.relation_tag[CarriedBy]
         return item
+
+def equip(item: Entity, actor: Entity):
+    slot = item.components[EquipmentSlot]
+    for equipped_item in inventory(actor, components=[EquipmentSlot], tags=[Equipped]):
+        if slot == equipped_item.components[EquipmentSlot]:
+            equipped_item.tags.remove(Equipped)
+    item.tags.add(Equipped)
 
 
 @callbacks.register_component_changed(component=Position)

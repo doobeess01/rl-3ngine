@@ -1,6 +1,6 @@
 import g
 
-from game.components import Graphic, Name, Description, ItemCategory
+from game.components import Graphic, Name, Description, ItemCategory, EquipmentSlot
 from game.tags import IsStackable, IsItem
 
 import game.colors as colors
@@ -31,6 +31,7 @@ SWORD = new_item(
     graphic = Graphic(ord('/'), colors.DARK_PURPLE, colors.BLACK),
     desc = 'a sword.',
     stackable=False,
+    components = {EquipmentSlot: 'weapon'},
 )
 POTION = new_item(
     category = 2,

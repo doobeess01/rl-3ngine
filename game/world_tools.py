@@ -6,7 +6,7 @@ from game.procgen import generate_map
 from game.components import Position
 from game.tags import IsActor
 from game.queue import Queue
-from game.entity_tools import spawn_creature, spawn_item, add_to_inventory
+from game.entity_tools import spawn_creature, spawn_item, add_to_inventory, equip
 from game.message_log import MessageLog, log
 
 
@@ -29,7 +29,7 @@ def world_init():
     add_to_inventory(spawn_item(items.POTION, quantity=3), g.player)
     spawn_item(items.POTION, Position(1,1,map_), quantity=4)
     spawn_item(items.SWORD, Position(2,2,map_))
-    spawn_item(items.SWORD, Position(3,3,map_))
+    equip(add_to_inventory(spawn_item(items.SWORD), g.player), g.player)
 
     enter_level(map_)
 
