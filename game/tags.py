@@ -10,3 +10,4 @@ CarriedBy: Final = 'CarriedBy'
 Equipped: Final = 'Equipped'
 
 IsGhost: Final = 'IsGhost'
+IsTimekeeper: Final = 'IsTimekeeper'

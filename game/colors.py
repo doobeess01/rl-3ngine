@@ -20,5 +20,7 @@ MSG_ATTACK = (LIGHT_RED, BLACK)
 MSG_DEATH = (BLACK, LIGHT_RED)
 MSG_FAILED_ACTION = (GRAY, BLACK)
 
+EFFECT_HPREGEN = (GREEN, BLACK)
+
 def invert(colors: tuple[tuple[int,int,int], tuple[int,int,int]]):
     return colors[1], colors[0]

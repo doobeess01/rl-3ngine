@@ -3,9 +3,10 @@ from typing import Iterable
 
 import g
 
-from game.components import Position, Name, HP, MaxHP, Quantity, EquipmentSlot
+from game.components import Position, Name, HP, MaxHP, Quantity, EquipmentSlot, DurationEffects
 from game.tags import IsCreature, IsActor, IsStackable, CarriedBy, Equipped
 from game.message_log import log
+from game.duration_effect import DurationEffect
 import game.colors as colors
 
 
@@ -39,6 +40,11 @@ def kill(actor: Entity):
     else:
         g.queue().remove(actor)
         actor.clear()
+
+def give_duration_effect(actor: Entity, effect: DurationEffect):
+    if not actor.components.get(DurationEffects, 0):
+        actor.components[DurationEffects] = DurationEffects()
+    actor.components[DurationEffects].add(effect)
 
 
 # Item tools
@@ -114,3 +120,11 @@ def on_hp_change(entity: Entity, old: int | None, new: int | None):
             kill(entity)
         elif new > entity.components[MaxHP]:
             entity.components[HP] = entity.components[MaxHP]
+
+@callbacks.register_component_changed(component=int)
+def on_time_advance(entity: Entity, old: int | None, new: int | None) -> None:
+    assert entity == g.registry[None]  # Only the registry should have a time component
+    if old:
+        for e in [e for e in g.registry.Q.all_of(components=[DurationEffects])]:
+            if not e.components[DurationEffects](e):
+                del e.components[DurationEffects]

@@ -2,6 +2,9 @@ import attrs
 from tcod.ecs import Entity, callbacks
 import numpy as np
 from typing import Final
+import g
+
+from game.duration_effect import DurationEffect
 
 
 @attrs.define
@@ -68,3 +71,18 @@ class OnConsume:
     def affect(self, actor: Entity):
         pass
 ConsumeVerb: Final = ('ConsumeVerb', str)
+
+class DurationEffects:
+    def __init__(self):
+        self.effects: list[DurationEffect] = []
+    def add(self, effect: DurationEffect):
+        self.effects.append(effect)
+    def __call__(self, actor):
+        new_effects = []
+        for i, effect in enumerate(self.effects):
+            if effect(actor):  # Execute effect
+                new_effects.append(effect)
+        self.effects = new_effects
+        if self.effects:
+            return True
+        return False

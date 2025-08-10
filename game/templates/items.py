@@ -2,7 +2,7 @@ import g
 
 from game.components import Graphic, Name, Description, ItemCategory, EquipmentSlot, OnConsume, ConsumeVerb
 from game.tags import IsStackable, IsItem
-from game.consumable_effects import HealthBoost
+from game.consumable_effects import BoostHP, RegenHP
 
 import game.colors as colors
 
@@ -71,10 +71,15 @@ SWORD = new_item(
     components = {EquipmentSlot: 'weapon'},
 )
 
-POTION_OF_HEALTH = new_potion(
+POTION_OF_HEALTH_BOOST = new_potion(
     name = 'potion of health boost',
     desc = 'A potion. Restores a small amount of HP when consumed.',
-    components = {OnConsume: HealthBoost(5)},
+    on_consume = BoostHP(5),
+)
+POTION_OF_HEALTH_REGEN = new_potion(
+    name = 'potion of health regeneration',
+    desc = 'A potion. Restores a small amount of HP when consumed.',
+    on_consume = RegenHP(2, 5),
 )
 
 SCROLL = new_item(

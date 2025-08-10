@@ -6,7 +6,7 @@ import g
 from game.action import Action, Pass
 from game.state import State
 from game.rendering import render_map, render_message_log, render_sidebar
-from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES, EquipmentSlot, HP, MaxHP, OnConsume
+from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES, EquipmentSlot, HP, MaxHP, OnConsume, DurationEffects
 from game.tags import IsItem, Equipped
 from game.actions import (
     MoveCursor, Select, 
@@ -227,10 +227,16 @@ class InGame(State):
         map_view_shape = (39,39)
         render_map(map_=player_pos.map_, screen_shape=map_view_shape, center=player_pos.ij)
         render_message_log((0,map_view_shape[0]+1), g.console.height-map_view_shape[0]-1)
+        effect_texts = []
+        if g.player.components.get(DurationEffects, 0):
+            effect_texts = [effect.text for effect in g.player.components[DurationEffects].effects]
         render_sidebar((map_view_shape[1]+1,0), lines=[
             Text(g.player.components[Name]),
+            Text(f'HP: {g.player.components[HP]}/{g.player.components[MaxHP]}'),
             None,
-            Text(f'HP: {g.player.components[HP]}/{g.player.components[MaxHP]}')
+            Text(f'Turns: {g.registry[None].components[int]}'),
+            None,
+            *effect_texts,
         ])
 
 
