@@ -29,6 +29,7 @@ IN_GAME = {
     K.I: ViewInventory(),
     K.COMMA: PickupItemDispatch(),
     K.D: DropItems(),
+    K.E: EquipOrUnequipItems(),
 }
 
 MENU = {

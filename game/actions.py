@@ -1,11 +1,13 @@
+from tcod.ecs import Entity
+
 import g
 
 from game.action import Action, MetaAction
 from game.components import Position, Name, Tiles, UnarmedAttack, HP
-from game.tags import IsCreature, CarriedBy
+from game.tags import IsCreature, CarriedBy, Equipped
 from game.tiles import TILES
 from game.message_log import log
-from game.entity_tools import add_to_inventory, drop
+from game.entity_tools import add_to_inventory, drop, equip
 
 import game.colors as colors
 
@@ -55,21 +57,29 @@ class Melee(Action):
         self.target.components[HP] -= damage
 
 
-class PickupItem(Action):
-    def __init__(self, item):
-        super().__init__()
+class ItemAction(Action):
+    def __init__(self, item: Entity, cost=100):
+        super().__init__(cost=cost)
         self.item = item
+
+class PickupItem(ItemAction):
     def execute(self, actor):
         log(f'{actor.components[Name]} picks up the {self.item.components[Name]}')
         add_to_inventory(self.item, actor)
 
-class DropItem(Action):
-    def __init__(self, item):
-        super().__init__()
-        self.item = item
+class DropItem(ItemAction):
     def execute(self, actor):
         log(f'{self.item.relation_tag[CarriedBy].components[Name]} drops the {self.item.components[Name]}')
         drop(self.item)
+
+class EquipOrUnequipItem(ItemAction):
+    def execute(self, actor):
+        if Equipped in self.item.tags:
+            self.item.tags.remove(Equipped)
+            log(f'You unequip the {self.item.components[Name]}.')
+        else:
+            equip(self.item, actor)
+            log(f'You equip the {self.item.components[Name]}.')
 
 
 # Pseudo-actions handled in states.py
@@ -91,4 +101,7 @@ class PickupItemDispatch:
     pass
 
 class DropItems:
+    pass
+
+class EquipOrUnequipItems:
     pass

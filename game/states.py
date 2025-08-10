@@ -6,9 +6,16 @@ import g
 from game.action import Action, Pass
 from game.state import State
 from game.rendering import render_map, render_message_log
-from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES
+from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES, EquipmentSlot
 from game.tags import IsItem, Equipped
-from game.actions import ViewInventory, MoveCursor, Select, Exit, PickupItem, PickupItemDispatch, DropItems, DropItem
+from game.actions import (
+    MoveCursor, Select, 
+    Exit, 
+    ViewInventory, 
+    PickupItem, PickupItemDispatch, 
+    DropItem, DropItems, 
+    EquipOrUnequipItem, EquipOrUnequipItems
+)
 from game.text import Text
 from game.entity_tools import inventory
 from game.message_log import log
@@ -161,6 +168,18 @@ class DropItemsMenu(ItemList):
         return inventory(g.player)
 
 
+class EquipOrUnequipItemMenu(ItemList):
+    def __init__(self):
+        super().__init__(
+            title='Equip/unequip which??',
+            action=EquipOrUnequipItem,
+            no_items_text='You have nothing to equip or unequip.'
+        )
+    def get_items(self):
+        return inventory(g.player, components=[EquipmentSlot])
+
+
+
 class InGame(State):
     def __init__(self):
         super().__init__(keybindings.IN_GAME)
@@ -186,6 +205,8 @@ class InGame(State):
                         log('There is nothing to pick up here.', colors.MSG_FAILED_ACTION)
                 case DropItems():
                     self.enter_substate(DropItemsMenu())
+                case EquipOrUnequipItems():
+                    self.enter_substate(EquipOrUnequipItemMenu())
                 case _:
                     return action
 
