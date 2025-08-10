@@ -3,7 +3,7 @@ from tcod.ecs import Entity
 import g
 
 from game.action import Action, MetaAction
-from game.components import Position, Name, Tiles, UnarmedAttack, HP
+from game.components import Position, Name, Tiles, UnarmedAttack, HP, OnConsume, ConsumeVerb
 from game.tags import IsCreature, CarriedBy, Equipped
 from game.tiles import TILES
 from game.message_log import log
@@ -81,6 +81,12 @@ class EquipOrUnequipItem(ItemAction):
             equip(self.item, actor)
             log(f'You equip the {self.item.components[Name]}.')
 
+class ConsumeItem(ItemAction):
+    def execute(self, actor):
+        on_consume = self.item.components[OnConsume]
+        log(f'You {self.item.components[ConsumeVerb]} the {self.item.components[Name]}.')
+        on_consume(self.item, actor)
+
 
 # Pseudo-actions handled in states.py
 
@@ -104,4 +110,7 @@ class DropItems:
     pass
 
 class EquipOrUnequipItems:
+    pass
+
+class ConsumeItems:
     pass

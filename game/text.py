@@ -1,7 +1,9 @@
 import g
 
+import game.colors as colors
+
 class Text:
-    def __init__(self, text, fg: tuple[int,int,int], bg: tuple[int,int,int]):    
+    def __init__(self, text, fg: tuple[int,int,int] = colors.WHITE, bg: tuple[int,int,int] = colors.BLACK):    
         self.text = text
         self.fg = fg
         self.bg = bg

@@ -54,4 +54,17 @@ ITEM_CATEGORIES: Final = [
 
     'equipped'  # Last slot is reserved for equipment; actually rendered first
 ]
+
 EquipmentSlot: Final = ('EquipmentSlot', str)
+
+class OnConsume:
+    def __call__(self, consumed: Entity, affecting: Entity):
+        self.affect(affecting)
+        if consumed.components[Quantity] > 1:
+            consumed.components[Quantity] -= 1
+        else:
+            consumed.clear()
+
+    def affect(self, actor: Entity):
+        pass
+ConsumeVerb: Final = ('ConsumeVerb', str)

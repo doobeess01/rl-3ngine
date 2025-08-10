@@ -5,8 +5,8 @@ import g
 
 from game.action import Action, Pass
 from game.state import State
-from game.rendering import render_map, render_message_log
-from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES, EquipmentSlot
+from game.rendering import render_map, render_message_log, render_sidebar
+from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES, EquipmentSlot, HP, MaxHP, OnConsume
 from game.tags import IsItem, Equipped
 from game.actions import (
     MoveCursor, Select, 
@@ -14,7 +14,8 @@ from game.actions import (
     ViewInventory, 
     PickupItem, PickupItemDispatch, 
     DropItem, DropItems, 
-    EquipOrUnequipItem, EquipOrUnequipItems
+    EquipOrUnequipItem, EquipOrUnequipItems,
+    ConsumeItem, ConsumeItems
 )
 from game.text import Text
 from game.entity_tools import inventory
@@ -171,13 +172,22 @@ class DropItemsMenu(ItemList):
 class EquipOrUnequipItemMenu(ItemList):
     def __init__(self):
         super().__init__(
-            title='Equip/unequip which??',
+            title='Equip/unequip which?',
             action=EquipOrUnequipItem,
             no_items_text='You have nothing to equip or unequip.'
         )
     def get_items(self):
         return inventory(g.player, components=[EquipmentSlot])
 
+class ConsumeItemsMenu(ItemList):
+    def __init__(self):
+        super().__init__(
+            title='Use which?',
+            action=ConsumeItem,
+            no_items_text='You have nothing to use.'
+        )
+    def get_items(self):
+        return inventory(g.player, components=[OnConsume])
 
 
 class InGame(State):
@@ -207,6 +217,8 @@ class InGame(State):
                     self.enter_substate(DropItemsMenu())
                 case EquipOrUnequipItems():
                     self.enter_substate(EquipOrUnequipItemMenu())
+                case ConsumeItems():
+                    self.enter_substate(ConsumeItemsMenu())
                 case _:
                     return action
 
@@ -215,6 +227,11 @@ class InGame(State):
         map_view_shape = (39,39)
         render_map(map_=player_pos.map_, screen_shape=map_view_shape, center=player_pos.ij)
         render_message_log((0,map_view_shape[0]+1), g.console.height-map_view_shape[0]-1)
+        render_sidebar((map_view_shape[1]+1,0), lines=[
+            Text(g.player.components[Name]),
+            None,
+            Text(f'HP: {g.player.components[HP]}/{g.player.components[MaxHP]}')
+        ])
 
 
 class GameOver(State):

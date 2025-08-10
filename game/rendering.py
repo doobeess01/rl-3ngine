@@ -9,6 +9,7 @@ from game.components import Position, Graphic, Tiles, MapShape, VisibleTiles, Me
 from game.tags import IsGhost
 from game.tiles import TILES
 from game.message_log import MessageLog
+from game.text import Text
 
 
 def render_map(map_: tcod.ecs.Entity, screen_shape: tuple[int, int], center: tuple[int,int]):
@@ -48,3 +49,9 @@ def render_map(map_: tcod.ecs.Entity, screen_shape: tuple[int, int], center: tup
 
 def render_message_log(position: tuple[int,int], rows):
     g.registry[None].components[MessageLog].render(position, rows)
+
+
+def render_sidebar(position: tuple[int,int], lines: list[Text | None]):
+    for i,text in enumerate(lines):
+        if text:
+            text.print(position[0],position[1]+i)

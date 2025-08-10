@@ -30,6 +30,7 @@ IN_GAME = {
     K.COMMA: PickupItemDispatch(),
     K.D: DropItems(),
     K.E: EquipOrUnequipItems(),
+    K.A: ConsumeItems(),
 }
 
 MENU = {

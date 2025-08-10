@@ -26,8 +26,8 @@ def world_init():
     g.player_is_dead = False
     monster = spawn_creature(creatures.MONSTER, Position(50,50,map_))
 
-    add_to_inventory(spawn_item(items.POTION, quantity=3), g.player)
-    spawn_item(items.POTION, Position(1,1,map_), quantity=4)
+    add_to_inventory(spawn_item(items.POTION_OF_HEALTH, quantity=3), g.player)
+    spawn_item(items.POTION_OF_HEALTH, Position(1,1,map_), quantity=4)
     spawn_item(items.SWORD, Position(2,2,map_))
     equip(add_to_inventory(spawn_item(items.SWORD), g.player), g.player)
 

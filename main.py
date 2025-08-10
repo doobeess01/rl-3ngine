@@ -8,7 +8,7 @@ from game.controller import Controller
 from game.world_tools import world_init
 
 
-CONSOLE_DIMENSIONS = (50,50)
+CONSOLE_DIMENSIONS = (55,50)
 
 THIS_DIR = Path(__file__, "..")
 FONT = THIS_DIR / 'assets/Alloy_curses_12x12.png'
