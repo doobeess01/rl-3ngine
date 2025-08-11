@@ -13,6 +13,8 @@ registry: tcod.ecs.Registry = None
 player: tcod.ecs.Entity = None
 player_is_dead: bool = False
 
+timekeeper: tcod.ecs.Entity = None
+
 def queue():
     try:
         return registry[None].components[game.queue.Queue]

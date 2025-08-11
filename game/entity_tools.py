@@ -103,19 +103,16 @@ def equip(item: Entity, actor: Entity):
     item.tags.add(Equipped)
 
 
-class AdvanceTime(Action):
-    def execute(self, actor):
-        g.registry[None].components[int] += 1
-class Timekeeper(Controller):
-    def __call__(self, actor):
-        return AdvanceTime()
 def enter_level(map_: Entity):
+    if g.queue().queue:
+        if g.queue().front == g.timekeeper:
+            g.timekeeper.components[Controller](g.timekeeper)(g.timekeeper)
     g.queue().clear()
-    for e in g.registry.Q.all_of(tags=[map_, IsActor]).none_of(tags=[IsTimekeeper]):
-        if e != g.player:
+    for e in g.registry.Q.all_of(tags=[map_, IsActor]):
+        if e not in (g.player,g.timekeeper):
             g.queue().add(e)
     g.queue().add(g.player)
-    g.queue().add(g.registry.new_entity(components={Controller: Timekeeper()}, tags=[IsActor, IsTimekeeper, map_]))
+    g.queue().add(g.timekeeper)
 
 
 @callbacks.register_component_changed(component=Position)
@@ -129,12 +126,6 @@ def on_position_changed(entity: Entity, old: Position | None, new: Position | No
     if new:
         entity.tags.add(new)
         entity.tags.add(new.map_)
-    if (not old) and new and entity == g.player:
-        enter_level(new.map_)
-    elif old and new and entity == g.player:
-        if old.map_ != new.map_:
-            enter_level(new.map_)
-
 
 @callbacks.register_component_changed(component=HP)
 def on_hp_change(entity: Entity, old: int | None, new: int | None):

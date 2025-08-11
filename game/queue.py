@@ -27,10 +27,9 @@ class Queue:
 
     @property
     def front(self):
-        try:
+        if self.queue:
             return self.queue[min(self.queue)][0]
-        except ValueError:
-            raise QueueError()
+        raise QueueError()
 
     def move_front(self, time):
         try:

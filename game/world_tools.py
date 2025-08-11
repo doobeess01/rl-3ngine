@@ -8,7 +8,17 @@ from game.queue import Queue
 from game.entity_tools import spawn_creature, spawn_item, add_to_inventory, equip, enter_level
 from game.message_log import MessageLog, log
 from game.staircase import place_staircase
+from game.action import Action
+from game.controller import Controller
+from game.tags import IsActor
 
+
+class AdvanceTime(Action):
+    def execute(self, actor):
+        g.registry[None].components[int] += 1
+class Timekeeper(Controller):
+    def __call__(self, actor):
+        return AdvanceTime()
 
 def world_init():
     g.registry = tcod.ecs.Registry()
@@ -25,6 +35,8 @@ def world_init():
 
     g.player = spawn_creature(creatures.PLAYER, Position(5,5,map_))
     g.player_is_dead = False
+    g.timekeeper = g.registry.new_entity(components={Controller: Timekeeper()}, tags=[IsActor, map_])
+
     monster = spawn_creature(creatures.MONSTER, Position(50,50,map_))
 
     add_to_inventory(spawn_item(items.POTION_OF_HEALTH_BOOST, quantity=3), g.player)

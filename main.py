@@ -42,6 +42,7 @@ def main():
                 action = g.state.on_event(event)
                 if action:
                     action(g.player)
+                    break
 
 
 if __name__ == '__main__':

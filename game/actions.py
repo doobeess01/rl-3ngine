@@ -89,9 +89,11 @@ class UseStairs(Action):
         super().__init__()
         self.direction = direction
     def execute(self, actor):
+        from game.entity_tools import enter_level
         staircase = [e for e in g.registry.Q.all_of(components=[StaircaseDirection], tags=[actor.components[Position]]) if e.components[StaircaseDirection] == self.direction]
         if staircase:
             actor.components[Position] = staircase[0].relation_tag[ConnectsTo].components[Position]
+            enter_level(actor.components[Position].map_)
             log(f'You {"descend" if self.direction == 1 else "ascend"}.')
         else:
             log(f'There is no {"down" if self.direction == 1 else "up"} staircase here.')

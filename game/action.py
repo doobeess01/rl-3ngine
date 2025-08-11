@@ -8,8 +8,8 @@ class Action:
 
     def __call__(self, actor):
         assert actor == g.queue().front
-        self.execute(actor)
         g.queue().move_front(self.cost)
+        self.execute(actor)
 
     def execute(self, actor):
         pass
