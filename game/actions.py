@@ -72,15 +72,15 @@ class EquipOrUnequipItem(ItemAction):
     def execute(self, actor):
         if Equipped in self.item.tags:
             self.item.tags.remove(Equipped)
-            log(f'You unequip the {self.item.components[Name]}.')
+            log(f'{actor.components[Name]} unequips the {self.item.components[Name]}.')
         else:
             equip(self.item, actor)
-            log(f'You equip the {self.item.components[Name]}.')
+            log(f'{actor.components[Name]} equips the {self.item.components[Name]}.')
 
 class ConsumeItem(ItemAction):
     def execute(self, actor):
         on_consume = self.item.components[OnConsume]
-        log(f'You {self.item.components[ConsumeVerb]} the {self.item.components[Name]}.')
+        log(f'{actor.components[Name]} {self.item.components[ConsumeVerb]}s the {self.item.components[Name]}.')
         on_consume(self.item, actor)
 
 
@@ -94,7 +94,7 @@ class UseStairs(Action):
         if staircase:
             actor.components[Position] = staircase[0].relation_tag[ConnectsTo].components[Position]
             enter_level(actor.components[Position].map_)
-            log(f'You {"descend" if self.direction == 1 else "ascend"}.')
+            log(f'{actor.components[Name]} {"descends" if self.direction == 1 else "ascends"}.')
         else:
             log(f'There is no {"down" if self.direction == 1 else "up"} staircase here.')
 

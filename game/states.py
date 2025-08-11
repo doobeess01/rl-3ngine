@@ -67,7 +67,7 @@ def sort_items(items: list[Entity]) -> dict[int: list[Entity]]:
     '''Returns a dictionary of sorted items by ItemCategory.'''
     sorted_items = {}
     for item in items:
-        category = item.components[ItemCategory] if Equipped not in item.tags else -1
+        category = -1 if Equipped in item.tags else item.components[ItemCategory]
         if sorted_items.get(category, 0):
             sorted_items[category].append(item)
         else:
@@ -100,6 +100,7 @@ class ItemList(Menu):
         if items:
             # Sort items by category
             sorted_items = sort_items(items)
+
             # Add options
             for category in sorted(sorted_items.keys()):
                 if category == -1:
@@ -124,8 +125,8 @@ class ItemList(Menu):
             for i,option in enumerate(self.options):
                 item = self.items[i]
                 previous_item = self.items[i-1]
-                category = item.components[ItemCategory] if Equipped not in item.tags else -1
-                previous_category = previous_item.components[ItemCategory]
+                category = -1 if Equipped in item.tags else item.components[ItemCategory]
+                previous_category = -1 if Equipped in previous_item.tags else previous_item.components[ItemCategory]
                 if category != previous_category or i==0:
                     line_counter += 1
                     g.console.print(0,line_counter,f'-- {ITEM_CATEGORIES[category]} --', fg=colors.PURPLE, bg=colors.BLACK)
