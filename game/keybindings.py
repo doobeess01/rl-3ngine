@@ -1,5 +1,6 @@
-from tcod.event import KeySym as K
+from tcod.event import KeySym as K, Modifier as M
 
+from game.action import Wait
 from game.actions import *
 
 IN_GAME = {
@@ -26,12 +27,16 @@ IN_GAME = {
     K.PERIOD: Wait(),
     K.N5: Wait(),
 
+    (M.SHIFT, K.PERIOD): UseStairs(1),
+    (M.SHIFT, K.COMMA): UseStairs(-1), 
+
     K.I: ViewInventory(),
     K.COMMA: PickupItemDispatch(),
     K.D: DropItems(),
     K.E: EquipOrUnequipItems(),
     K.A: ConsumeItems(),
 }
+
 
 MENU = {
     K.UP: MoveCursor(-1),

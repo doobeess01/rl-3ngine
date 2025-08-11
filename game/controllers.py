@@ -3,7 +3,8 @@ import random
 import g
 
 from game.controller import Controller
-from game.actions import Bump, Wait
+from game.action import Wait
+from game.actions import Bump
 from game.tiles import TILES
 from game.components import Position, Tiles
 from game.tags import IsCreature

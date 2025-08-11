@@ -1,4 +1,4 @@
-from tcod.event import Event, KeyDown, Quit
+from tcod.event import Event, KeyDown, Quit, Modifier
 
 import g
 
@@ -13,10 +13,11 @@ class State:
     def on_event(self, event: Event) -> Action:
         action = None
         match event:
-            case KeyDown(sym=sym, mod=mod) if (mod,sym) in self.keybindings:
-                action = self.keybindings[(mod,sym)]
-            case KeyDown(sym=sym) if sym in self.keybindings:
-                action = self.keybindings[sym]
+            case KeyDown(sym=sym, mod=mod):
+                if (Modifier.SHIFT, sym) in self.keybindings and (mod & Modifier.SHIFT):
+                    action = self.keybindings[(Modifier.SHIFT, sym)]
+                elif sym in self.keybindings:
+                    action = self.keybindings[sym]
             case Quit():
                 raise SystemExit
         return action

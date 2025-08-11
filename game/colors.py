@@ -22,5 +22,7 @@ MSG_FAILED_ACTION = (GRAY, BLACK)
 
 EFFECT_HPREGEN = (GREEN, BLACK)
 
+STAIRCASE = (GRAY, BLACK)
+
 def invert(colors: tuple[tuple[int,int,int], tuple[int,int,int]]):
     return colors[1], colors[0]

@@ -86,3 +86,5 @@ class DurationEffects:
         if self.effects:
             return True
         return False
+
+StaircaseDirection: Final = ('StaircaseDirection', int)

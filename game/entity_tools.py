@@ -4,7 +4,9 @@ from typing import Iterable
 import g
 
 from game.components import Position, Name, HP, MaxHP, Quantity, EquipmentSlot, DurationEffects
-from game.tags import IsCreature, IsActor, IsStackable, CarriedBy, Equipped
+from game.tags import IsCreature, IsActor, IsStackable, CarriedBy, Equipped, IsTimekeeper
+from game.controller import Controller
+from game.action import Action
 from game.message_log import log
 from game.duration_effect import DurationEffect
 import game.colors as colors
@@ -101,6 +103,21 @@ def equip(item: Entity, actor: Entity):
     item.tags.add(Equipped)
 
 
+class AdvanceTime(Action):
+    def execute(self, actor):
+        g.registry[None].components[int] += 1
+class Timekeeper(Controller):
+    def __call__(self, actor):
+        return AdvanceTime()
+def enter_level(map_: Entity):
+    g.queue().clear()
+    for e in g.registry.Q.all_of(tags=[map_, IsActor]).none_of(tags=[IsTimekeeper]):
+        if e != g.player:
+            g.queue().add(e)
+    g.queue().add(g.player)
+    g.queue().add(g.registry.new_entity(components={Controller: Timekeeper()}, tags=[IsActor, IsTimekeeper, map_]))
+
+
 @callbacks.register_component_changed(component=Position)
 def on_position_changed(entity: Entity, old: Position | None, new: Position | None) -> None:
     '''Set Position and map_ tags for easy lookup by-position and by-map.'''
@@ -112,6 +129,7 @@ def on_position_changed(entity: Entity, old: Position | None, new: Position | No
     if new:
         entity.tags.add(new)
         entity.tags.add(new.map_)
+
 
 @callbacks.register_component_changed(component=HP)
 def on_hp_change(entity: Entity, old: int | None, new: int | None):

@@ -11,3 +11,5 @@ Equipped: Final = 'Equipped'
 
 IsGhost: Final = 'IsGhost'
 IsTimekeeper: Final = 'IsTimekeeper'
+
+ConnectsTo: Final = 'ConnectsTo'

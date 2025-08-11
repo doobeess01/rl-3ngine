@@ -24,6 +24,10 @@ class MetaAction:
         pass
 
 
+class Wait(Action):
+    '''Do nothing for a turn.'''
+    pass
+
 class Pass(MetaAction):
     '''Action that does nothing whatsoever. Useful only as a placeholder for unimplemented features.'''
     def __init__(self, *args, **kwargs):

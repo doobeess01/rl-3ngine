@@ -4,12 +4,10 @@ import g
 
 from game.procgen import generate_map
 from game.components import Position
-from game.tags import IsActor, IsTimekeeper
 from game.queue import Queue
-from game.entity_tools import spawn_creature, spawn_item, add_to_inventory, equip
+from game.entity_tools import spawn_creature, spawn_item, add_to_inventory, equip, enter_level
 from game.message_log import MessageLog, log
-from game.controller import Controller
-from game.action import Action
+from game.staircase import place_staircase
 
 
 def world_init():
@@ -35,21 +33,5 @@ def world_init():
     spawn_item(items.SWORD, Position(2,2,map_))
     equip(add_to_inventory(spawn_item(items.SWORD), g.player), g.player)
 
+    place_staircase(Position(3,1,map_), Position(56,56,map_))
     enter_level(map_)
-
-
-class AdvanceTime(Action):
-    def execute(self, actor):
-        g.registry[None].components[int] += 1
-class Timekeeper(Controller):
-    def __call__(self, actor):
-        return AdvanceTime()
-        
-
-def enter_level(map_: tcod.ecs.Entity):
-    g.queue().clear()
-    for e in g.registry.Q.all_of(tags=[map_, IsActor]).none_of(tags=[IsTimekeeper]):
-        if e != g.player:
-            g.queue().add(e)
-    g.queue().add(g.player)
-    g.queue().add(g.registry.new_entity(components={Controller: Timekeeper()}, tags=[IsActor, map_]))

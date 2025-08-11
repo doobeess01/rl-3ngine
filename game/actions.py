@@ -3,17 +3,13 @@ from tcod.ecs import Entity
 import g
 
 from game.action import Action, MetaAction
-from game.components import Position, Name, Tiles, UnarmedAttack, HP, OnConsume, ConsumeVerb
-from game.tags import IsCreature, CarriedBy, Equipped
+from game.components import Position, Name, Tiles, UnarmedAttack, HP, OnConsume, ConsumeVerb, StaircaseDirection
+from game.tags import IsCreature, CarriedBy, Equipped, ConnectsTo
 from game.tiles import TILES
 from game.message_log import log
 from game.entity_tools import add_to_inventory, drop, equip
 
 import game.colors as colors
-
-
-class Wait(Action):
-    pass
 
 
 class Directional(Action):
@@ -86,6 +82,19 @@ class ConsumeItem(ItemAction):
         on_consume = self.item.components[OnConsume]
         log(f'You {self.item.components[ConsumeVerb]} the {self.item.components[Name]}.')
         on_consume(self.item, actor)
+
+
+class UseStairs(Action):
+    def __init__(self, direction):
+        super().__init__()
+        self.direction = direction
+    def execute(self, actor):
+        staircase = [e for e in g.registry.Q.all_of(components=[StaircaseDirection], tags=[actor.components[Position]]) if e.components[StaircaseDirection] == self.direction]
+        if staircase:
+            actor.components[Position] = staircase[0].relation_tag[ConnectsTo].components[Position]
+            log(f'You {"descend" if self.direction == 1 else "ascend"}.')
+        else:
+            log(f'There is no {"down" if self.direction == 1 else "up"} staircase here.')
 
 
 # Pseudo-actions handled in states.py
