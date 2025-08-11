@@ -33,5 +33,6 @@ def world_init():
     spawn_item(items.SWORD, Position(2,2,map_))
     equip(add_to_inventory(spawn_item(items.SWORD), g.player), g.player)
 
-    place_staircase(Position(3,1,map_), Position(56,56,map_))
+    map_2 = generate_map((5,5))
+    place_staircase(Position(3,1,map_), Position(3,3,map_2))
     enter_level(map_)
