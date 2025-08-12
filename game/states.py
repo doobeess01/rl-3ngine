@@ -25,26 +25,51 @@ import game.keybindings as keybindings
 import game.colors as colors
 
 
+class State(State):
+    def on_event(self, event):
+        action = super().on_event(event)
+
+        if g.player_is_dead:
+            match event:
+                case KeyDown(sym=K.SPACE):
+                    g.state = GameOver()
+        elif action:
+            match action:
+                case ViewInventory():
+                    self.enter_substate(ViewInventoryMenu())
+                case PickupItemDispatch():
+                    items = PickupItemsMenu().get_items()
+                    if len(items) > 1:
+                        self.enter_substate(PickupItemsMenu())
+                    elif items:
+                        return PickupItem(items[0])
+                    else:
+                        log(Text('There is nothing to pick up here.', colors.MSG_FAILED_ACTION))
+                case DropItems():
+                    self.enter_substate(DropItemsMenu())
+                case EquipOrUnequipItems():
+                    self.enter_substate(EquipOrUnequipItemMenu())
+                case ConsumeItems():
+                    self.enter_substate(ConsumeItemsMenu())
+                case InteractWithFeatures():
+                    self.enter_substate(
+                        DirectionSelect(InteractWithFeature, message=Text('Interact in which direction?', colors.MSG_DIRECTION_SELECT)), 
+                    )
+                case MoveCursor():
+                    self.move_cursor(action.direction)
+                case Select():
+                    self.select()
+                case Exit():
+                    self.exit()
+                case _:
+                    return action        
+
+
 class Menu(State):
     def __init__(self):
         super().__init__(keybindings.MENU)
         self.options = self.get_options()
         self.cursor = 0
-
-    def on_event(self, event):
-        action = super().on_event(event)
-
-        match action:
-            case None:
-                pass
-            case MoveCursor():
-                self.move_cursor(action.direction)
-            case Select():
-                self.select()
-            case Exit():
-                self.exit()
-            case _:
-                return action
                 
     def move_cursor(self, direction: int):
         self.cursor = len(self.options)-1 if not self.cursor+direction+1 else 0 if self.cursor+direction-1 == len(self.options)-1 else self.cursor+direction
@@ -196,38 +221,6 @@ class InGame(State):
     def __init__(self):
         super().__init__(keybindings.IN_GAME)
 
-    def on_event(self, event):
-        action = super().on_event(event)
-
-        if g.player_is_dead:
-            match event:
-                case KeyDown(sym=K.SPACE):
-                    g.state = GameOver()
-        elif action:
-            match action:
-                case ViewInventory():
-                    self.enter_substate(ViewInventoryMenu())
-                case PickupItemDispatch():
-                    items = PickupItemsMenu().get_items()
-                    if len(items) > 1:
-                        self.enter_substate(PickupItemsMenu())
-                    elif items:
-                        return PickupItem(items[0])
-                    else:
-                        log(Text('There is nothing to pick up here.', colors.MSG_FAILED_ACTION))
-                case DropItems():
-                    self.enter_substate(DropItemsMenu())
-                case EquipOrUnequipItems():
-                    self.enter_substate(EquipOrUnequipItemMenu())
-                case ConsumeItems():
-                    self.enter_substate(ConsumeItemsMenu())
-                case InteractWithFeatures():
-                    self.enter_substate(
-                        DirectionSelect(InteractWithFeature, message=Text('Interact in which direction?', colors.MSG_DIRECTION_SELECT)), 
-                    )
-                case _:
-                    return action
-
     def on_draw(self):
         player_pos = g.player.components[Position]
         map_view_shape = (39,39)
@@ -252,13 +245,6 @@ class DirectionSelect(State):
         self.action = action
         self.message = message
         log(self.message)
-    def on_event(self, event):
-        action = super().on_event(event)
-        match action:
-            case Exit():
-                self.exit()
-            case _:
-                return action
     def exit(self, report = True):
         super().exit()
         if report:
