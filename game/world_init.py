@@ -3,7 +3,7 @@ import tcod.ecs
 import g
 
 from game.procgen import generate_map
-from game.components import Position
+from game.components import Position, Name
 from game.queue import Queue
 from game.entity_tools import spawn_creature, spawn_item, add_to_inventory, equip, enter_level
 from game.message_log import MessageLog, log
@@ -35,6 +35,7 @@ def world_init():
     map_ = generate_map(map_shape)
 
     g.player = spawn_creature(creatures.PLAYER, Position(5,5,map_))
+    g.player.components[Name] = g.player_name
     g.player_is_dead = False
     g.timekeeper = g.registry.new_entity(components={Controller: Timekeeper()}, tags=[IsActor, map_])
 

@@ -3,9 +3,8 @@ import tcod
 
 import g
 
-from game.states import InGame
+from game.states import PlayerNameInput
 from game.controller import Controller
-from game.world_init import world_init
 
 
 CONSOLE_DIMENSIONS = (55,50)
@@ -23,8 +22,7 @@ def draw():
 def main():
     g.console = tcod.console.Console(*CONSOLE_DIMENSIONS)
 
-    world_init()
-    g.state = InGame()
+    g.state = PlayerNameInput()
 
     tileset = tcod.tileset.load_tilesheet(FONT, 16, 16, tcod.tileset.CHARMAP_CP437)
     with tcod.context.new(console=g.console, tileset=tileset) as g.context:

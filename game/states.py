@@ -21,6 +21,7 @@ from game.actions import (
 from game.text import Text
 from game.entity_tools import inventory
 from game.message_log import log
+from game.world_init import world_init
 import game.keybindings as keybindings
 import game.colors as colors
 
@@ -82,6 +83,42 @@ class Menu(State):
     def get_options(self) -> list[tuple[Text, Action]]:
         '''Return a list of (Text, Action) tuple pairs representing the options in the menu.'''
         return []
+
+'''
+class MainMenu(Menu):
+    def get_options(self):
+        return [
+            ()
+        ]
+    def on_draw(self):
+        pass
+'''
+
+class PlayerNameInput(State):
+    def __init__(self):
+        super().__init__(keybindings.TEXT_INPUT)
+        self.text = g.player_name
+        self.confirm_prompt = False
+    def on_event(self, event):
+        if self.confirm_prompt:
+            match event:
+                case KeyDown(sym=K.Y):
+                    g.player_name = self.text
+                    world_init()
+                    g.state = InGame()
+                case KeyDown(K.N):
+                    self.confirm_prompt = False
+        else:
+            return super().on_event(event)
+    def input(self, letter: str):
+        self.text += letter
+    def backspace(self):
+        self.text = self.text[:-1]
+    def select(self):
+        self.confirm_prompt = True
+    def on_draw(self):
+        Text(f'Name: {self.text}').print(1,1)
+        Text(f'Play as {self.text}? (y/n)' if self.confirm_prompt else 'Press ENTER to confirm', colors.PROMPT).print(1,3)
 
 
 def sort_items(items: list[Entity]) -> dict[int: list[Entity]]:

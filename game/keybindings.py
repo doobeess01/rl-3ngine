@@ -70,3 +70,13 @@ DIRECTION_SELECT = {
     **directional_actions(SelectDirection),
     K.ESCAPE: Exit(),
 }
+
+
+TEXT_INPUT = {
+    **{i+97: Input('abcdefghijklmnopqrstuvwxyz'[i]) for i in range(26)},
+    **{(M.SHIFT, i+97): Input('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i]) for i in range(26)},
+    K.PERIOD: Input('.'),
+    K.SPACE: Input(' '),
+    K.BACKSPACE: Backspace(),
+    K.RETURN: Select(),
+}
