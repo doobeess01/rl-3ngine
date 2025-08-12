@@ -5,7 +5,7 @@ import g
 
 from game.states import InGame
 from game.controller import Controller
-from game.world_tools import world_init
+from game.world_init import world_init
 
 
 CONSOLE_DIMENSIONS = (55,50)
