@@ -2,7 +2,7 @@ from tcod.ecs import Entity
 
 import g
 
-from game.action import Action, MetaAction
+from game.action import Action, MetaAction, PseudoAction
 from game.components import Position, Name, Tiles, UnarmedAttack, HP, OnConsume, ConsumeVerb, StaircaseDirection, OnInteract
 from game.tags import IsCreature, CarriedBy, Equipped, ConnectsTo, IsBlocking
 from game.tiles import TILES
@@ -117,30 +117,31 @@ class InteractWithFeature(Directional):
 
 # Pseudo-actions handled in states.py
 
-class ViewInventory:
+
+class ViewInventory(PseudoAction):
     pass
 
-class MoveCursor:
+class MoveCursor(PseudoAction):
     def __init__(self, direction: int):
         self.direction = direction
 
-class Select:
+class Select(PseudoAction):
     pass
 
-class Exit:
+class Exit(PseudoAction):
     pass
 
-class PickupItemDispatch:
+class PickupItemDispatch(PseudoAction):
     pass
 
-class DropItems:
+class DropItems(PseudoAction):
     pass
 
-class EquipOrUnequipItems:
+class EquipOrUnequipItems(PseudoAction):
     pass
 
-class ConsumeItems:
+class ConsumeItems(PseudoAction):
     pass
 
-class InteractWithFeatures:
+class InteractWithFeatures(PseudoAction):
     pass

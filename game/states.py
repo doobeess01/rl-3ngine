@@ -3,7 +3,7 @@ from tcod.ecs import Entity
 
 import g
 
-from game.action import Action, Pass
+from game.action import Action, MetaAction, PseudoAction, Pass
 from game.state import State
 from game.rendering import render_map, render_message_log, render_sidebar
 from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES, EquipmentSlot, HP, MaxHP, OnConsume, DurationEffects
@@ -26,43 +26,38 @@ import game.colors as colors
 
 
 class State(State):
-    def on_event(self, event):
-        action = super().on_event(event)
+    '''Base state that includes pseudo-action handling.'''
 
-        if g.player_is_dead:
-            match event:
-                case KeyDown(sym=K.SPACE):
-                    g.state = GameOver()
-        elif action:
-            match action:
-                case ViewInventory():
-                    self.enter_substate(ViewInventoryMenu())
-                case PickupItemDispatch():
-                    items = PickupItemsMenu().get_items()
-                    if len(items) > 1:
-                        self.enter_substate(PickupItemsMenu())
-                    elif items:
-                        return PickupItem(items[0])
-                    else:
-                        log(Text('There is nothing to pick up here.', colors.MSG_FAILED_ACTION))
-                case DropItems():
-                    self.enter_substate(DropItemsMenu())
-                case EquipOrUnequipItems():
-                    self.enter_substate(EquipOrUnequipItemMenu())
-                case ConsumeItems():
-                    self.enter_substate(ConsumeItemsMenu())
-                case InteractWithFeatures():
-                    self.enter_substate(
-                        DirectionSelect(InteractWithFeature, message=Text('Interact in which direction?', colors.MSG_DIRECTION_SELECT)), 
-                    )
-                case MoveCursor():
-                    self.move_cursor(action.direction)
-                case Select():
-                    self.select()
-                case Exit():
-                    self.exit()
-                case _:
-                    return action        
+    def execute_pseudo_action(self, action: PseudoAction): 
+        match action:
+            case ViewInventory():
+                self.enter_substate(ViewInventoryMenu())
+            case PickupItemDispatch():
+                items = PickupItemsMenu().get_items()
+                if len(items) > 1:
+                    self.enter_substate(PickupItemsMenu())
+                elif items:
+                    return PickupItem(items[0])
+                else:
+                    log(Text('There is nothing to pick up here.', colors.MSG_FAILED_ACTION))
+            case DropItems():
+                self.enter_substate(DropItemsMenu())
+            case EquipOrUnequipItems():
+                self.enter_substate(EquipOrUnequipItemMenu())
+            case ConsumeItems():
+                self.enter_substate(ConsumeItemsMenu())
+            case InteractWithFeatures():
+                self.enter_substate(
+                    DirectionSelect(InteractWithFeature, message=Text('Interact in which direction?', colors.MSG_DIRECTION_SELECT)), 
+                )
+            case MoveCursor():
+                self.move_cursor(action.direction)
+            case Select():
+                self.select()
+            case Exit():
+                self.exit()
+            case _:
+                print(f'WARNING: Attempted to execute unimplemented PseudoAction {action.__class__.__name__}')
 
 
 class Menu(State):
@@ -102,7 +97,7 @@ def sort_items(items: list[Entity]) -> dict[int: list[Entity]]:
 
 
 class ItemList(Menu):
-    def __init__(self, title: str, action: Action = Pass, no_items_text = '[No items]'):
+    def __init__(self, title: str, action: Action | MetaAction = Pass, no_items_text = '[No items]'):
         self.title = title
         self.action = action
         self.no_items_text = no_items_text
