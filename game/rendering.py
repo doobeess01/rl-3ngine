@@ -34,16 +34,17 @@ def render_map(map_: tcod.ecs.Entity, screen_shape: tuple[int, int], center: tup
         rendered_pos = pos - (camera[1], camera[0])
         graphic = e.components[Graphic]
 
-        render_order = 1
-        if IsItem in e.tags:
-            render_order = 2
-        if IsCreature in e.tags:
-            render_order = 3
-        if g.player == e:
-            render_order = 4
-        if rendered_priority.get(rendered_pos, 0) >= render_order:
-            continue  # Do not render over a more important entity
-        rendered_priority[rendered_pos] = render_order
+        if IsGhost not in e.tags:
+            render_order = 1
+            if IsItem in e.tags:
+                render_order = 2
+            if IsCreature in e.tags:
+                render_order = 3
+            if g.player == e:
+                render_order = 4
+            if rendered_priority.get(rendered_pos, 0) >= render_order:
+                continue  # Do not render over a more important entity
+            rendered_priority[rendered_pos] = render_order
 
         in_bounds = 0 <= rendered_pos.x < screen_shape[1] and 0 <= rendered_pos.y < screen_shape[0]
 

@@ -37,9 +37,10 @@ def update_fov(actor: tcod.ecs.Entity, *, clear: bool = False) -> None:
         pos = entity.components[Position]
         if not now_invisible[pos.ij]:
             continue
-        ghost = world[object()]
-        ghost.tags.add(IsGhost)
-        ghost.components[Position] = pos
-        ghost.components[Graphic] = entity.components[Graphic]
+        ghost = world.new_entity(
+            components = {Position: pos, Graphic: entity.components[Graphic]},
+            tags = {IsGhost},
+        )
+
         if Name in entity.components:
             ghost.components[Name] = entity.components[Name]
