@@ -3,11 +3,12 @@ from tcod.ecs import Entity
 import g
 
 from game.action import Action, MetaAction
-from game.components import Position, Name, Tiles, UnarmedAttack, HP, OnConsume, ConsumeVerb, StaircaseDirection
-from game.tags import IsCreature, CarriedBy, Equipped, ConnectsTo
+from game.components import Position, Name, Tiles, UnarmedAttack, HP, OnConsume, ConsumeVerb, StaircaseDirection, OnInteract
+from game.tags import IsCreature, CarriedBy, Equipped, ConnectsTo, IsBlocking
 from game.tiles import TILES
 from game.message_log import log
 from game.entity_tools import add_to_inventory, drop, equip
+from game.text import Text
 
 import game.colors as colors
 
@@ -21,6 +22,8 @@ class Directional(Action):
         return actor.components[Position] + self.direction
     def creature(self, actor):
         for e in g.registry.Q.all_of(tags=[self.dest(actor), IsCreature]): return e  # There should be only one creature occupying a tile
+    def blocking_feature(self, actor):
+        for e in g.registry.Q.all_of(tags=[self.dest(actor), IsBlocking], components=[OnInteract]): return e
 
 
 class Bump(MetaAction, Directional):
@@ -28,8 +31,11 @@ class Bump(MetaAction, Directional):
         super().__init__(direction)
     def execute(self, actor):
         creature = self.creature(actor)
+        blocking_feature = self.blocking_feature(actor)
         if creature:
             Melee(creature)(actor)
+        elif blocking_feature:
+            InteractWithFeature(self.direction)(actor)
         else:
             Move(self.direction)(actor)
 
@@ -49,7 +55,7 @@ class Melee(Action):
     def execute(self, actor):
         damage = actor.components[UnarmedAttack]
         message_color = colors.MSG_ATTACK if actor != g.player else colors.DEFAULT
-        log(f'{actor.components[Name]} attacks {self.target.components[Name]} for {damage} damage!', message_color)
+        log(Text(f'{actor.components[Name]} attacks {self.target.components[Name]} for {damage} damage!', message_color))
         self.target.components[HP] -= damage
 
 
@@ -60,27 +66,27 @@ class ItemAction(Action):
 
 class PickupItem(ItemAction):
     def execute(self, actor):
-        log(f'{actor.components[Name]} picks up the {self.item.components[Name]}')
+        log(Text(f'{actor.components[Name]} picks up the {self.item.components[Name]}'))
         add_to_inventory(self.item, actor)
 
 class DropItem(ItemAction):
     def execute(self, actor):
-        log(f'{self.item.relation_tag[CarriedBy].components[Name]} drops the {self.item.components[Name]}')
+        log(Text(f'{self.item.relation_tag[CarriedBy].components[Name]} drops the {self.item.components[Name]}'))
         drop(self.item)
 
 class EquipOrUnequipItem(ItemAction):
     def execute(self, actor):
         if Equipped in self.item.tags:
             self.item.tags.remove(Equipped)
-            log(f'{actor.components[Name]} unequips the {self.item.components[Name]}.')
+            log(Text(f'{actor.components[Name]} unequips the {self.item.components[Name]}.'))
         else:
             equip(self.item, actor)
-            log(f'{actor.components[Name]} equips the {self.item.components[Name]}.')
+            log(Text(f'{actor.components[Name]} equips the {self.item.components[Name]}.'))
 
 class ConsumeItem(ItemAction):
     def execute(self, actor):
         on_consume = self.item.components[OnConsume]
-        log(f'{actor.components[Name]} {self.item.components[ConsumeVerb]}s the {self.item.components[Name]}.')
+        log(Text(f'{actor.components[Name]} {self.item.components[ConsumeVerb]}s the {self.item.components[Name]}.'))
         on_consume(self.item, actor)
 
 
@@ -94,9 +100,19 @@ class UseStairs(Action):
         if staircase:
             actor.components[Position] = staircase[0].relation_tag[ConnectsTo].components[Position]
             enter_level(actor.components[Position].map_)
-            log(f'{actor.components[Name]} {"descends" if self.direction == 1 else "ascends"}.')
+            log(Text(f'{actor.components[Name]} {"descends" if self.direction == 1 else "ascends"}.'))
         else:
-            log(f'There is no {"down" if self.direction == 1 else "up"} staircase here.')
+            log(Text(f'There is no {"down" if self.direction == 1 else "up"} staircase here.'))
+            return True
+
+class InteractWithFeature(Directional):
+    def execute(self, actor):
+        for feature in g.registry.Q.all_of(tags=[self.dest(actor)], components=[OnInteract]):
+            feature.components[OnInteract](feature, actor)
+            return 
+        else:
+            log(Text('There is nothing to interact with there.', colors.MSG_FAILED_ACTION))
+            return True
 
 
 # Pseudo-actions handled in states.py
@@ -124,4 +140,7 @@ class EquipOrUnequipItems:
     pass
 
 class ConsumeItems:
+    pass
+
+class InteractWithFeatures:
     pass

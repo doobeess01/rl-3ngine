@@ -18,11 +18,13 @@ DARK_PURPLE = (86, 0, 99)
 DEFAULT = (WHITE, BLACK)
 MSG_ATTACK = (LIGHT_RED, BLACK)
 MSG_DEATH = (BLACK, LIGHT_RED)
+MSG_DIRECTION_SELECT = (BLUE, BLACK)
 MSG_FAILED_ACTION = (GRAY, BLACK)
 
 EFFECT_HPREGEN = (GREEN, BLACK)
 
 STAIRCASE = (GRAY, BLACK)
+DOOR = (GRAY, BLACK)
 
 def invert(colors: tuple[tuple[int,int,int], tuple[int,int,int]]):
     return colors[1], colors[0]

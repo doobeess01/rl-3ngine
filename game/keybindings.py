@@ -3,29 +3,41 @@ from tcod.event import KeySym as K, Modifier as M
 from game.action import Wait
 from game.actions import *
 
+
+DIRECTIONS = {
+    K.UP: (0,-1),
+    K.N8: (0,-1),
+
+    K.N9: (1,-1),
+
+    K.RIGHT: (1,0),
+    K.N6: (1,0),
+
+    K.N3: (1,1),
+
+    K.DOWN: (0,1),
+    K.N2: (0,1),
+
+    K.N1: (-1,1),
+
+    K.LEFT: (-1,0),
+    K.N4: (-1,0),
+
+    K.N7: (-1,-1),
+}
+SAME_SQUARE = [K.PERIOD, K.N5]
+
+def directional_actions(action: Action | MetaAction):
+    k = {key: action(direction) for key,direction in DIRECTIONS.items()}
+    if action != Bump:
+        k |= {key: action((0,0)) for key in SAME_SQUARE}
+    else:
+        k |= {key: Wait() for key in SAME_SQUARE}
+    return k
+
+
 IN_GAME = {
-    K.UP: Bump((0,-1)),
-    K.N8: Bump((0,-1)),
-
-    K.N9: Bump((1,-1)),
-
-    K.RIGHT: Bump((1,0)),
-    K.N6: Bump((1,0)),
-
-    K.N3: Bump((1,1)),
-
-    K.DOWN: Bump((0,1)),
-    K.N2: Bump((0,1)),
-
-    K.N1: Bump((-1,1)),
-
-    K.LEFT: Bump((-1,0)),
-    K.N4: Bump((-1,0)),
-
-    K.N7: Bump((-1,-1)),
-
-    K.PERIOD: Wait(),
-    K.N5: Wait(),
+    **directional_actions(Bump),
 
     (M.SHIFT, K.PERIOD): UseStairs(1),
     (M.SHIFT, K.COMMA): UseStairs(-1), 
@@ -35,6 +47,7 @@ IN_GAME = {
     K.D: DropItems(),
     K.E: EquipOrUnequipItems(),
     K.A: ConsumeItems(),
+    K.N: InteractWithFeatures(),
 }
 
 
@@ -44,5 +57,16 @@ MENU = {
 
     K.RETURN: Select(),
 
+    K.ESCAPE: Exit(),
+}
+
+
+class SelectDirection(MetaAction, Directional):
+    def execute(self, actor):
+        g.state.action(self.direction)(actor)
+        g.state.exit(report=False)
+
+DIRECTION_SELECT = {
+    **directional_actions(SelectDirection),
     K.ESCAPE: Exit(),
 }

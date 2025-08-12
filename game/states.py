@@ -15,7 +15,8 @@ from game.actions import (
     PickupItem, PickupItemDispatch, 
     DropItem, DropItems, 
     EquipOrUnequipItem, EquipOrUnequipItems,
-    ConsumeItem, ConsumeItems
+    ConsumeItem, ConsumeItems,
+    InteractWithFeature, InteractWithFeatures,
 )
 from game.text import Text
 from game.entity_tools import inventory
@@ -88,7 +89,7 @@ class ItemList(Menu):
         quantity = item.components[Quantity]
         graphic = item.components[Graphic]
         options.append((
-            Text(name+(f' (x{quantity})' if quantity > 1 else '')+(' (equipped)' if Equipped in item.tags else ''), graphic.fg, graphic.bg),
+            Text(name+(f' (x{quantity})' if quantity > 1 else '')+(' (equipped)' if Equipped in item.tags else ''), (graphic.fg, graphic.bg)),
             self.action(item)
         ))
         self.items.append(item)
@@ -213,13 +214,17 @@ class InGame(State):
                     elif items:
                         return PickupItem(items[0])
                     else:
-                        log('There is nothing to pick up here.', colors.MSG_FAILED_ACTION)
+                        log(Text('There is nothing to pick up here.', colors.MSG_FAILED_ACTION))
                 case DropItems():
                     self.enter_substate(DropItemsMenu())
                 case EquipOrUnequipItems():
                     self.enter_substate(EquipOrUnequipItemMenu())
                 case ConsumeItems():
                     self.enter_substate(ConsumeItemsMenu())
+                case InteractWithFeatures():
+                    self.enter_substate(
+                        DirectionSelect(InteractWithFeature, message=Text('Interact in which direction?', colors.MSG_DIRECTION_SELECT)), 
+                    )
                 case _:
                     return action
 
@@ -239,6 +244,27 @@ class InGame(State):
             None,
             *effect_texts,
         ])
+
+
+class DirectionSelect(State):
+    def __init__(self, action, message: Text = Text('In which direction?')):
+        super().__init__(keybindings=keybindings.DIRECTION_SELECT)
+        self.action = action
+        self.message = message
+        log(self.message)
+    def on_event(self, event):
+        action = super().on_event(event)
+        match action:
+            case Exit():
+                self.exit()
+            case _:
+                return action
+    def exit(self, report = True):
+        super().exit()
+        if report:
+            log(Text('Never mind.', colors.MSG_FAILED_ACTION))
+    def on_draw(self):
+        InGame().on_draw()
 
 
 class GameOver(State):

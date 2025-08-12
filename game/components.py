@@ -88,3 +88,8 @@ class DurationEffects:
         return False
 
 StaircaseDirection: Final = ('StaircaseDirection', int)
+
+
+class OnInteract:
+    def __call__(self, feature: Entity, actor: Entity):
+        pass

@@ -7,10 +7,11 @@ from game.components import Position
 from game.queue import Queue
 from game.entity_tools import spawn_creature, spawn_item, add_to_inventory, equip, enter_level
 from game.message_log import MessageLog, log
-from game.staircase import place_staircase
+from game.features import place_staircase, place_door
 from game.action import Action
 from game.controller import Controller
 from game.tags import IsActor
+from game.text import Text
 
 
 class AdvanceTime(Action):
@@ -28,7 +29,7 @@ def world_init():
     g.registry[None].components[MessageLog] = MessageLog()
     g.registry[None].components[int] = 0  # Turn count
     
-    log('Welcome to the testing zone!')
+    log(Text('Welcome to the testing zone!'))
 
     map_shape = (60,60)
     map_ = generate_map(map_shape)
@@ -47,4 +48,5 @@ def world_init():
 
     map_2 = generate_map((5,5))
     place_staircase(Position(3,1,map_), Position(3,3,map_2))
+    place_door(Position(10,10,map_))
     enter_level(map_)

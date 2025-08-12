@@ -30,6 +30,10 @@ class Hostile(Controller):
         path = path_to(actor, player_pos)
         if path:
             dest = path[0]
-            return Bump((dest.x - actor.components[Position].x, dest.y-actor.components[Position].y))
+            action = Bump((dest.x - actor.components[Position].x, dest.y-actor.components[Position].y))
+            creature = action.creature(actor)
+            if creature != g.player and creature is not None:
+                return Wait()
+            return action
         else:
             return Wander()(actor)

@@ -9,6 +9,7 @@ from game.controller import Controller
 from game.action import Action
 from game.message_log import log
 from game.duration_effect import DurationEffect
+from game.text import Text
 import game.colors as colors
 
 
@@ -33,12 +34,12 @@ def spawn_creature(template: Entity, position: Position, components: dict = {}, 
     return creature
 
 def kill(actor: Entity):
-    log(f'{actor.components[Name]} dies!', colors.MSG_DEATH)
+    log(Text(f'{actor.components[Name]} dies!', colors.MSG_DEATH))
     if actor == g.player:
         g.player_is_dead = True
         g.queue().clear()
         g.queue().add(g.player)
-        log('Press SPACE to accept your fate...', colors.MSG_DEATH)
+        log(Text('Press SPACE to accept your fate...', colors.MSG_DEATH))
     else:
         g.queue().remove(actor)
         actor.clear()
