@@ -9,5 +9,6 @@ A roguelike engine with on python-tcod. The 3 refers to this being my third seri
 + Consumables; multi-turn effects like HP regeneration
 + Equipment and equipment slots
 + Staircases; multiple dungeon levels
++ Doors and support for other interactible "dungeon features"
 
 Procedural generation will not be included here and should be implemented in any games that use this engine.
