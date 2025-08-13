@@ -40,10 +40,10 @@ def world_init():
     g.player_is_dead = False
     g.timekeeper = g.registry.new_entity(components={Controller: Timekeeper()}, tags=[IsActor, map_])
 
-    creatures.MONSTER.spawn(Position(50,50,map_))
-    creatures.MONSTER.spawn(Position(51,51,map_))
-    creatures.MONSTER.spawn(Position(52,52,map_))
-    creatures.MONSTER.spawn(Position(53,53,map_))
+    creatures.MONSTER.spawn(Position(50,9,map_))
+    creatures.MONSTER.spawn(Position(51,9,map_))
+    creatures.MONSTER.spawn(Position(52,9,map_))
+    creatures.MONSTER.spawn(Position(53,9,map_))
     
     add_to_inventory(items.POTION_OF_HEALTH_BOOST.spawn(quantity=3), g.player)
     add_to_inventory(items.POTION_OF_HEALTH_REGEN.spawn(quantity=3), g.player)

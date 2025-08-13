@@ -51,6 +51,8 @@ class Queue:
     @front.deleter
     def front(self):
         del self.front_row[0]
+        if not self.front_row:
+            del self.front_row
 
     def move_front(self, time):
         if Deferred in self.front.tags:
