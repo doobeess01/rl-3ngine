@@ -100,7 +100,7 @@ class MainMenu(Menu):
             (Text('Quit', colors.MAIN_MENU), Exit()),
         ]
     def on_draw(self):
-        Text('UNTITLED 11DRL').print(3,3)
+        Text('UNTITLED RL').print(3,3)
         for i,text in enumerate(self.get_texts()):
             printed_text = copy.deepcopy(text) 
             printed_text.string = ('> ' if self.cursor == i else '  ') + text.string
