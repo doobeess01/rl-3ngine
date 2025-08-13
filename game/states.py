@@ -1,3 +1,5 @@
+import copy
+
 from tcod.event import KeyDown, KeySym as K
 from tcod.ecs import Entity
 
@@ -9,8 +11,9 @@ from game.rendering import render_map, render_message_log, render_sidebar
 from game.components import Position, Graphic, Name, Quantity, ItemCategory, ITEM_CATEGORIES, EquipmentSlot, HP, MaxHP, OnConsume, DurationEffects
 from game.tags import IsItem, Equipped
 from game.actions import (
-    MoveCursor, Select, 
-    Exit, 
+    BeginGame,
+    MoveCursor, Select,
+    Exit,
     ViewInventory, 
     PickupItem, PickupItemDispatch, 
     DropItem, DropItems, 
@@ -31,6 +34,8 @@ class State(State):
 
     def execute_pseudo_action(self, action: PseudoAction): 
         match action:
+            case BeginGame():
+                g.state = PlayerNameInput()
             case ViewInventory():
                 self.enter_substate(ViewInventoryMenu())
             case PickupItemDispatch():
@@ -83,16 +88,24 @@ class Menu(State):
     def get_options(self) -> list[tuple[Text, Action]]:
         '''Return a list of (Text, Action) tuple pairs representing the options in the menu.'''
         return []
+    
+    def get_texts(self):
+        return [option[0] for option in self.options]
 
-'''
+
 class MainMenu(Menu):
     def get_options(self):
         return [
-            ()
+            (Text('Play', colors.MAIN_MENU), BeginGame()),
+            (Text('Quit', colors.MAIN_MENU), Exit()),
         ]
     def on_draw(self):
-        pass
-'''
+        Text('UNTITLED 11DRL').print(3,3)
+        for i,text in enumerate(self.get_texts()):
+            printed_text = copy.deepcopy(text) 
+            printed_text.text = ('> ' if self.cursor == i else '  ') + text.text
+            printed_text.print(1,20+i*2)
+
 
 class PlayerNameInput(State):
     def __init__(self):

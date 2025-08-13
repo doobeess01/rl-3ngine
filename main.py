@@ -3,7 +3,7 @@ import tcod
 
 import g
 
-from game.states import PlayerNameInput
+from game.states import MainMenu
 from game.controller import Controller
 
 
@@ -22,7 +22,7 @@ def draw():
 def main():
     g.console = tcod.console.Console(*CONSOLE_DIMENSIONS)
 
-    g.state = PlayerNameInput()
+    g.state = MainMenu()
 
     tileset = tcod.tileset.load_tilesheet(FONT, 16, 16, tcod.tileset.CHARMAP_CP437)
     with tcod.context.new(console=g.console, tileset=tileset) as g.context:

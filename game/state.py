@@ -28,6 +28,8 @@ class State:
     def exit(self):
         if self.parent:
             g.state = self.parent
+        else:
+            raise SystemExit
 
     def enter_substate(self, state):
         parent = g.state

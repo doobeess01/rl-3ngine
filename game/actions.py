@@ -154,3 +154,6 @@ class ConsumeItems(PseudoAction):
 
 class InteractWithFeatures(PseudoAction):
     pass
+
+class BeginGame(PseudoAction):
+    pass
