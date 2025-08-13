@@ -5,7 +5,7 @@ import g
 from game.procgen import generate_map
 from game.components import Position, Name
 from game.queue import Queue
-from game.entity_tools import spawn_creature, spawn_item, add_to_inventory, equip, enter_level
+from game.entity_tools import add_to_inventory, equip, enter_level
 from game.message_log import MessageLog, log
 from game.features import place_staircase, place_door
 from game.action import Action
@@ -17,6 +17,7 @@ from game.text import Text
 class AdvanceTime(Action):
     def execute(self, actor):
         g.registry[None].components[int] += 1
+
 class Timekeeper(Controller):
     def __call__(self, actor):
         return AdvanceTime()
@@ -34,18 +35,18 @@ def world_init():
     map_shape = (60,60)
     map_ = generate_map(map_shape)
 
-    g.player = spawn_creature(creatures.PLAYER, Position(5,5,map_))
+    g.player = creatures.PLAYER.spawn(Position(5,5,map_))
     g.player.components[Name] = g.player_name
     g.player_is_dead = False
     g.timekeeper = g.registry.new_entity(components={Controller: Timekeeper()}, tags=[IsActor, map_])
 
-    monster = spawn_creature(creatures.MONSTER, Position(50,50,map_))
+    monster = creatures.MONSTER.spawn(Position(50,50,map_))
 
-    add_to_inventory(spawn_item(items.POTION_OF_HEALTH_BOOST, quantity=3), g.player)
-    add_to_inventory(spawn_item(items.POTION_OF_HEALTH_REGEN, quantity=3), g.player)
-    spawn_item(items.POTION_OF_HEALTH_BOOST, Position(1,1,map_), quantity=4)
-    spawn_item(items.SWORD, Position(2,2,map_))
-    equip(add_to_inventory(spawn_item(items.SWORD), g.player), g.player)
+    add_to_inventory(items.POTION_OF_HEALTH_BOOST.spawn(quantity=3), g.player)
+    add_to_inventory(items.POTION_OF_HEALTH_REGEN.spawn(quantity=3), g.player)
+    items.POTION_OF_HEALTH_BOOST.spawn(Position(1,1,map_), quantity=4)
+    items.SWORD.spawn(Position(2,2,map_))
+    equip(add_to_inventory(items.SWORD.spawn(), g.player), g.player)
 
     map_2 = generate_map((5,5))
     place_staircase(Position(3,1,map_), Position(3,3,map_2))

@@ -5,6 +5,9 @@ from typing import Final
 import g
 
 from game.duration_effect import DurationEffect
+from game.message_log import log
+from game.text import Text
+import game.colors as colors
 
 
 @attrs.define
@@ -69,7 +72,8 @@ class OnConsume:
             consumed.clear()
 
     def affect(self, actor: Entity):
-        pass
+        log(Text(f'Nothing happens to {actor.components[Name]}.', colors.MSG_FAILED_ACTION))
+
 ConsumeVerb: Final = ('ConsumeVerb', str)
 
 class DurationEffects:

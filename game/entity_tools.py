@@ -13,25 +13,8 @@ from game.text import Text
 import game.colors as colors
 
 
-# Generic tools
-
-def spawn_entity(template: Entity, position: Position = None, components: dict = {}, tags: set = {}) -> Entity:
-    e = template.instantiate()
-    if position:
-        e.components[Position] = position
-    e.components |= components
-    e.tags |= tags
-
-    return e
-
 
 # Creature tools
-
-def spawn_creature(template: Entity, position: Position, components: dict = {}, tags: set = {}) -> Entity:
-    creature = spawn_entity(template, position=position, components=components, tags=tags)
-    creature.tags.add(IsCreature)
-    creature.tags.add(IsActor)
-    return creature
 
 def kill(actor: Entity):
     log(Text(f'{actor.components[Name]} dies!', colors.MSG_DEATH))
@@ -51,14 +34,6 @@ def give_duration_effect(actor: Entity, effect: DurationEffect):
 
 
 # Item tools
-
-def spawn_item(template: Entity, position: Position = None, quantity: int = 1, components: dict = {}, tags: set = {}):
-    if position:
-        for e in g.registry.Q.all_of(tags=[position, IsStackable], relations=[(IsA, template)]):
-            # If there is an identical stackable item on the same square, add to its quantity
-            e.components[Quantity] += quantity
-            return e
-    return spawn_entity(template, position=position, components={Quantity: quantity}|components, tags=tags)
 
 def inventory(entity: Entity, components: list = [], tags: list[str] = []):
     '''

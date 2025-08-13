@@ -16,4 +16,4 @@ class DurationEffect:
         pass
     @property
     def text(self):
-        return Text(f'{self.name} ({self.duration})', *self.colors)
+        return Text(f'{self.name} ({self.duration})', self.colors)
