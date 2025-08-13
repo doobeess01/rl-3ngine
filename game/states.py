@@ -103,7 +103,7 @@ class MainMenu(Menu):
         Text('UNTITLED 11DRL').print(3,3)
         for i,text in enumerate(self.get_texts()):
             printed_text = copy.deepcopy(text) 
-            printed_text.text = ('> ' if self.cursor == i else '  ') + text.text
+            printed_text.string = ('> ' if self.cursor == i else '  ') + text.string
             printed_text.print(1,20+i*2)
 
 

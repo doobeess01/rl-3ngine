@@ -1,3 +1,5 @@
+import copy
+
 import g
 
 from game.text import Text
@@ -9,10 +11,10 @@ class Message:
         self.count = count
     def print(self, x, y, fg = None, bg = None, invert = False):
         multiple_text = f' (x{self.count})' if self.count > 1 else ''
-        self.text.text += multiple_text
-        self.text.print(x, y, fg, bg, invert)
-        if len(multiple_text) > 0:
-            self.text.text = self.text.text[:-len(multiple_text)]
+        printed_text = copy.deepcopy(self.text)
+        printed_text.string += multiple_text
+        printed_text.print(x, y, fg, bg, invert)
+
     def __eq__(self, other):
         if self.text == other.text:
             return True

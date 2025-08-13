@@ -116,10 +116,10 @@ class InteractWithFeature(Directional):
 
 
 class Input(MetaAction):
-    def __init__(self, text: str):
-        self.text = text
+    def __init__(self, string: str):
+        self.string = string
     def execute(self, actor):
-        g.state.input(self.text)
+        g.state.input(self.string)
 class Backspace(MetaAction):
     def execute(self, actor):
         g.state.backspace()
