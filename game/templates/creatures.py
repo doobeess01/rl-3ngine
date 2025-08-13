@@ -46,7 +46,7 @@ PLAYER = Creature(
     name='player',
     graphic=Graphic(ord('@'), (255,255,255), (0,0,0)),
     desc="You're you.",
-    hp=15,
+    hp=1000,
     attack=3,
 )
 

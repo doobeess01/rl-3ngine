@@ -266,6 +266,14 @@ class InGame(State):
     def __init__(self):
         super().__init__(keybindings.IN_GAME)
 
+    def on_event(self, event):
+        if g.player_is_dead:
+            match event:
+                case KeyDown(sym=K.SPACE):
+                    g.state = GameOver()
+        else:
+            return super().on_event(event)
+
     def on_draw(self):
         player_pos = g.player.components[Position]
         map_view_shape = (39,39)

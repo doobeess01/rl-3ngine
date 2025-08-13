@@ -1,6 +1,7 @@
 from typing import Final
 
 IsActor: Final = 'IsActor'
+Deferred: Final = 'Deferred'
 
 IsCreature: Final = 'IsCreature'
 

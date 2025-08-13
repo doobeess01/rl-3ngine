@@ -2,6 +2,7 @@ from tcod.ecs import Entity
 
 import g
 
+from game.controller import Controller
 from game.action import Action, MetaAction, PseudoAction
 from game.components import Position, Name, Tiles, UnarmedAttack, HP, OnConsume, ConsumeVerb, StaircaseDirection, OnInteract
 from game.tags import IsCreature, CarriedBy, Equipped, ConnectsTo, IsBlocking
@@ -11,6 +12,15 @@ from game.entity_tools import add_to_inventory, drop, equip
 from game.text import Text
 
 import game.colors as colors
+
+
+class Defer:
+    '''Wait until the next non-deffered entity has taken an action.
+    
+    Useful if an actor wants to move into the position of another entity.'''
+    def __call__(self, actor):
+        assert actor == g.queue().front
+        g.queue().defer_front()
 
 
 class Directional(Action):
