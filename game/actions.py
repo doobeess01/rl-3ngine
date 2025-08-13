@@ -4,7 +4,7 @@ import g
 
 from game.controller import Controller
 from game.action import Action, MetaAction, PseudoAction
-from game.components import Position, Name, Tiles, UnarmedAttack, HP, OnConsume, ConsumeVerb, StaircaseDirection, OnInteract
+from game.components import Position, Name, Tiles, Attack, HP, OnConsume, ConsumeVerb, StaircaseDirection, OnInteract
 from game.tags import IsCreature, CarriedBy, Equipped, ConnectsTo, IsBlocking
 from game.tiles import TILES
 from game.message_log import log
@@ -63,7 +63,7 @@ class Melee(Action):
         super().__init__()
 
     def execute(self, actor):
-        damage = actor.components[UnarmedAttack]
+        damage = actor.components[Attack]
         message_color = colors.MSG_ATTACK if actor != g.player else colors.DEFAULT
         log(Text(f'{actor.components[Name]} attacks {self.target.components[Name]} for {damage} damage!', message_color))
         self.target.components[HP] -= damage

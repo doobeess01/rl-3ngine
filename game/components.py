@@ -48,7 +48,7 @@ Description: Final = ('Description', str)
 
 MaxHP: Final = ('MaxHP', int)
 HP: Final = ('HP', int)
-UnarmedAttack: Final = ('UnarmedAttack', int)
+Attack: Final = ('Attack', int)
 
 Quantity: Final = ('Quantity', int)
 ItemCategory: Final = ('ItemCategory', int)

@@ -8,7 +8,7 @@ class Action:
 
     def __call__(self, actor):
         assert actor == g.queue().front
-        if not self.execute(actor):
+        if not self.execute(actor):  # Action did not fail
             g.queue().move_front(self.cost)
 
     def execute(self, actor):

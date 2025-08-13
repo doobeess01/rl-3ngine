@@ -1,7 +1,7 @@
 import g
 
 from game.templates.template import Template
-from game.components import Name, Position, Graphic, Description, MaxHP, HP, UnarmedAttack
+from game.components import Name, Position, Graphic, MaxHP, HP, Attack
 from game.tags import IsCreature, IsActor
 
 from game.controller import Controller
@@ -29,7 +29,7 @@ class Creature(Template):
             components = {
                 MaxHP: hp,
                 HP: hp,
-                UnarmedAttack: attack,
+                Attack: attack,
                 Controller: controller,
             }|components,
             tags = tags,
