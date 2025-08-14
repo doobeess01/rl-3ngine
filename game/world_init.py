@@ -30,7 +30,7 @@ def world_init():
     g.registry[None].components[MessageLog] = MessageLog()
     g.registry[None].components[int] = 0  # Turn count
     
-    log(Text('Welcome to the testing zone!'))
+    log(Text('Welcome to the testing zone! This is a ridiculously long message to test the message log\'s word wrapping capabilities.'))
 
     map_shape = (60,60)
     map_ = generate_map(map_shape)

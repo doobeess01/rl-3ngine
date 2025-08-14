@@ -134,10 +134,19 @@ class Backspace(MetaAction):
     def execute(self, actor):
         g.state.backspace()
 
+class ScrollView(MetaAction):
+    def __init__(self, direction: int):
+        self.direction = direction
+    def execute(self, actor):
+        g.state.scroll(self.direction)
+
 # Pseudo-actions handled in states.py
 
 
 class ViewInventory(PseudoAction):
+    pass
+
+class ViewMessageLog(PseudoAction):
     pass
 
 class MoveCursor(PseudoAction):

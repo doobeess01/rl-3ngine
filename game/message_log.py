@@ -9,11 +9,12 @@ class Message:
     def __init__(self, text: Text, count=1):
         self.text = text
         self.count = count
-    def print(self, x, y, fg = None, bg = None, invert = False):
+
+    def print(self, x, y, fg = None, bg = None, columns: int = None, invert = False):
         multiple_text = f' (x{self.count})' if self.count > 1 else ''
         printed_text = copy.deepcopy(self.text)
         printed_text.string += multiple_text
-        printed_text.print(x, y, fg, bg, invert)
+        return printed_text.print(x, y, fg, bg, columns, invert)
 
     def __eq__(self, other):
         if self.text == other.text:
@@ -34,11 +35,23 @@ class MessageLog:
         except IndexError:
             pass
         self.messages.append(message)
-    def render(self, position: tuple[int, int], rows: int):
-        for i, message in enumerate(self.messages[-rows:]):
+    def render(self, position: tuple[int, int], rows: int, offset: int = 0):
+        if len(self.messages)-rows-offset > 0:
+            rows_start = len(self.messages)-rows-offset
+            rows_end = len(self.messages)-offset
+        else:
+            rows_start = 0
+            rows_end = len(self.messages)
+        printed_messages = self.messages[rows_start:rows_end]
+        for i,message in enumerate(printed_messages):
             message.print(position[0], position[1]+i)
+
     def clear(self):
         self.messages = []
+
+
+def message_log():
+    return g.registry[None].components[MessageLog]
 
 
 def log(text: Text):

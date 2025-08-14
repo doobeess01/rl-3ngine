@@ -13,7 +13,9 @@ from game.text import Text
 
 
 def render_map(map_: tcod.ecs.Entity, screen_shape: tuple[int, int], center: tuple[int,int]):
+    g.console.draw_frame(-1,-1,g.console.width+2, screen_shape[0]+2)
     g.console.draw_frame(-1,-1,screen_shape[1]+2, screen_shape[0]+2)
+    g.console.print(screen_shape[1], screen_shape[0], '┴')
 
     update_fov(g.player)
 
@@ -61,7 +63,7 @@ def render_map(map_: tcod.ecs.Entity, screen_shape: tuple[int, int], center: tup
     g.console.rgb["bg"][console_slices][not_visible] //= 2
 
 
-def render_message_log(position: tuple[int,int], rows):
+def render_message_log(position: tuple[int,int], rows: int):
     g.registry[None].components[MessageLog].render(position, rows)
 
 

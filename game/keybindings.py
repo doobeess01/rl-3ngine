@@ -43,6 +43,7 @@ IN_GAME = {
     (M.SHIFT, K.COMMA): UseStairs(-1), 
 
     K.I: ViewInventory(),
+    (M.SHIFT, K.M): ViewMessageLog(),
     K.COMMA: PickupItemDispatch(),
     K.D: DropItems(),
     K.E: EquipOrUnequipItems(),
@@ -79,4 +80,10 @@ TEXT_INPUT = {
     K.SPACE: Input(' '),
     K.BACKSPACE: Backspace(),
     K.RETURN: Select(),
+}
+
+VIEW_TEXT = {
+    K.UP: ScrollView(-1),
+    K.DOWN: ScrollView(1),
+    K.ESCAPE: Exit(),
 }

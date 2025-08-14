@@ -14,7 +14,7 @@ from game.actions import (
     BeginGame,
     MoveCursor, Select,
     Exit,
-    ViewInventory, 
+    ViewInventory, ViewMessageLog,
     PickupItem, PickupItemDispatch, 
     DropItem, DropItems, 
     EquipOrUnequipItem, EquipOrUnequipItems,
@@ -23,7 +23,7 @@ from game.actions import (
 )
 from game.text import Text
 from game.entity_tools import inventory
-from game.message_log import log
+from game.message_log import log, message_log
 from game.world_init import world_init
 import game.keybindings as keybindings
 import game.colors as colors
@@ -38,6 +38,8 @@ class State(State):
                 g.state = PlayerNameInput()
             case ViewInventory():
                 self.enter_substate(ViewInventoryMenu())
+            case ViewMessageLog():
+                self.enter_substate(MessageLogView())
             case PickupItemDispatch():
                 items = PickupItemsMenu().get_items()
                 if len(items) > 1:
@@ -119,7 +121,7 @@ class PlayerNameInput(State):
                     g.player_name = self.text
                     world_init()
                     g.state = InGame()
-                case KeyDown(K.N):
+                case KeyDown(sym=K.N):
                     self.confirm_prompt = False
         else:
             return super().on_event(event)
@@ -260,6 +262,25 @@ class ConsumeItemsMenu(ItemList):
         )
     def get_items(self):
         return inventory(g.player, components=[OnConsume])
+
+
+class MessageLogView(State):
+    def __init__(self):
+        super().__init__(keybindings.VIEW_TEXT)
+        self.offset = 0
+        self.rows = g.console.height-2
+    def scroll(self, direction: int):
+        direction = -direction
+        self.offset = max(self.offset+direction, 0) if direction == -1 else min(self.offset+direction, len(message_log().messages)-self.rows)
+    def on_draw(self):
+        g.console.draw_frame(-1,2,g.console.width+2,g.console.height, clear=False)
+        g.console.draw_frame(-1,2,3,g.console.height, clear=False)
+        if len(message_log().messages)-self.rows-self.offset != 0:
+            g.console.print(0,3,'↑')
+        if self.offset > 0:
+            g.console.print(0,g.console.height-1,'↓')
+
+        message_log().render((2,3),self.rows, offset=self.offset)
 
 
 class InGame(State):
