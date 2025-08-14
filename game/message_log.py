@@ -3,6 +3,7 @@ import copy
 import g
 
 from game.text import Text
+from game.text_tools import get_text_rows
 
 
 class Message:
@@ -36,13 +37,7 @@ class MessageLog:
             pass
         self.messages.append(message)
     def render(self, position: tuple[int, int], rows: int, offset: int = 0):
-        if len(self.messages)-rows-offset > 0:
-            rows_start = len(self.messages)-rows-offset
-            rows_end = len(self.messages)-offset
-        else:
-            rows_start = 0
-            rows_end = len(self.messages)
-        printed_messages = self.messages[rows_start:rows_end]
+        printed_messages = get_text_rows(self.messages, rows, offset=offset)
         for i,message in enumerate(printed_messages):
             message.print(position[0], position[1]+i)
 

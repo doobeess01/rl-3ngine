@@ -25,6 +25,7 @@ from game.text import Text
 from game.entity_tools import inventory
 from game.message_log import log, message_log
 from game.world_init import world_init
+from game.text_tools import get_text_rows, print_text_rows
 import game.keybindings as keybindings
 import game.colors as colors
 
@@ -264,23 +265,31 @@ class ConsumeItemsMenu(ItemList):
         return inventory(g.player, components=[OnConsume])
 
 
-class MessageLogView(State):
-    def __init__(self):
+class TextRowsView(State):
+    def __init__(self, texts):
         super().__init__(keybindings.VIEW_TEXT)
+        self.texts = texts
         self.offset = 0
         self.rows = g.console.height-2
     def scroll(self, direction: int):
         direction = -direction
-        self.offset = max(self.offset+direction, 0) if direction == -1 else min(self.offset+direction, len(message_log().messages)-self.rows)
+        self.offset = max(self.offset+direction, 0) if direction == -1 else min(self.offset+direction, len(message_log().messages)-self.rows) 
     def on_draw(self):
-        g.console.draw_frame(-1,2,g.console.width+2,g.console.height, clear=False)
-        g.console.draw_frame(-1,2,3,g.console.height, clear=False)
-        if len(message_log().messages)-self.rows-self.offset != 0:
+        g.console.draw_frame(-1,2,g.console.width+2,g.console.height)
+        g.console.draw_frame(-1,2,3,g.console.height)
+        g.console.print(1,2,'┬')
+        if len(self.texts)-self.rows-self.offset > 0:
             g.console.print(0,3,'↑')
         if self.offset > 0:
             g.console.print(0,g.console.height-1,'↓')
 
-        message_log().render((2,3),self.rows, offset=self.offset)
+        printed_texts = get_text_rows(self.texts, self.rows, offset=self.offset)
+        print_text_rows(printed_texts, (2,3))
+
+
+class MessageLogView(TextRowsView):
+    def __init__(self):
+        super().__init__(message_log().messages)
 
 
 class InGame(State):
