@@ -3,32 +3,28 @@ import copy
 import g
 
 from game.text import Text
-from game.text_tools import get_text_rows
+from game.text_tools import get_text_rows, wrap_texts, print_text_rows
 
 
-class Message:
-    def __init__(self, text: Text, count=1):
-        self.text = text
+class Message(Text):
+    def __init__(self, string, colors, count=1):
+        super().__init__(string, colors)
         self.count = count
 
-    def print(self, x, y, fg = None, bg = None, columns: int = None, invert = False):
+    @property
+    def string(self):
         multiple_text = f' (x{self.count})' if self.count > 1 else ''
-        printed_text = copy.deepcopy(self.text)
-        printed_text.string += multiple_text
-        return printed_text.print(x, y, fg, bg, columns, invert)
+        return super().string + multiple_text
 
     def __eq__(self, other):
-        if self.text == other.text:
-            return True
-        return False
-
+        return super().__eq__(other)
 
 class MessageLog:
     def __init__(self, width=None):
         self.width = width
         self.messages: list[Message] = []
-    def log(self, text: Text):
-        message = Message(text)
+    def log(self, string, colors):
+        message = Message(string, colors)
         try:
             if message == self.messages[-1]:
                 self.messages[-1].count += 1
@@ -37,9 +33,8 @@ class MessageLog:
             pass
         self.messages.append(message)
     def render(self, position: tuple[int, int], rows: int, offset: int = 0):
-        printed_messages = get_text_rows(self.messages, rows, offset=offset)
-        for i,message in enumerate(printed_messages):
-            message.print(position[0], position[1]+i)
+        printed_messages = get_text_rows(wrap_texts(self.messages, g.console.width-2), rows, offset=offset)
+        print_text_rows((printed_messages), position)
 
     def clear(self):
         self.messages = []
@@ -51,4 +46,4 @@ def message_log():
 
 def log(text: Text):
     '''Wrapper function for ease of use when interacting with the message log.'''
-    g.registry[None].components[MessageLog].log(text)
+    message_log().log(text.string, text.colors)

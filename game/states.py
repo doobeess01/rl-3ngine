@@ -25,7 +25,7 @@ from game.text import Text
 from game.entity_tools import inventory
 from game.message_log import log, message_log
 from game.world_init import world_init
-from game.text_tools import get_text_rows, print_text_rows
+from game.text_tools import get_text_rows, print_text_rows, wrap_texts
 import game.keybindings as keybindings
 import game.colors as colors
 
@@ -105,8 +105,8 @@ class MainMenu(Menu):
     def on_draw(self):
         Text('UNTITLED RL').print(3,3)
         for i,text in enumerate(self.get_texts()):
-            printed_text = copy.deepcopy(text) 
-            printed_text.string = ('> ' if self.cursor == i else '  ') + text.string
+            printed_text = copy.deepcopy(text)
+            printed_text.raw_string = ('> ' if self.cursor == i else '') + printed_text.raw_string
             printed_text.print(1,20+i*2)
 
 
@@ -273,17 +273,17 @@ class TextRowsView(State):
         self.rows = g.console.height-2
     def scroll(self, direction: int):
         direction = -direction
-        self.offset = max(self.offset+direction, 0) if direction == -1 else min(self.offset+direction, len(message_log().messages)-self.rows) 
+        self.offset = max(self.offset+direction, 0) if direction == -1 else min(self.offset+direction, len(self.texts)-self.rows+2) 
     def on_draw(self):
         g.console.draw_frame(-1,2,g.console.width+2,g.console.height)
         g.console.draw_frame(-1,2,3,g.console.height)
         g.console.print(1,2,'┬')
-        if len(self.texts)-self.rows-self.offset > 0:
+        if len(self.texts)-self.rows-self.offset+2 > 0:
             g.console.print(0,3,'↑')
         if self.offset > 0:
             g.console.print(0,g.console.height-1,'↓')
 
-        printed_texts = get_text_rows(self.texts, self.rows, offset=self.offset)
+        printed_texts = get_text_rows(wrap_texts(self.texts, max_length = g.console.width-2), self.rows, offset=self.offset)
         print_text_rows(printed_texts, (2,3))
 
 
