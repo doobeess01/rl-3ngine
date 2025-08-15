@@ -15,3 +15,4 @@ IsTimekeeper: Final = 'IsTimekeeper'
 
 ConnectsTo: Final = 'ConnectsTo'
 IsBlocking: Final = 'IsBlocking'
+BlocksFOV: Final = 'BlocksFOV'

@@ -5,12 +5,17 @@ import numpy as np
 
 from game.tiles import TILES
 from game.components import Position, Graphic, Name, Tiles, VisibleTiles, MemoryTiles
-from game.tags import IsGhost
+from game.tags import IsGhost, BlocksFOV
+
+import g
 
 def update_fov(actor: tcod.ecs.Entity, *, clear: bool = False) -> None:
     """Update the FOV of an actor."""
     map_: Final = actor.components[Position].map_
     transparency: Final = TILES["transparent"][map_.components[Tiles]]
+    for e in g.registry.Q.all_of(tags=[BlocksFOV]):
+        transparency[e.components[Position].ij] = False
+        
     old_visible: Final = map_.components[VisibleTiles]
     if clear:  # Unset visibility, for before level transitions.
         map_.components[VisibleTiles][:] = False

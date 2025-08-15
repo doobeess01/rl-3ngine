@@ -3,7 +3,7 @@ from tcod.ecs import Entity
 import g
 
 from game.components import Position, Graphic, StaircaseDirection, OnInteract, Name
-from game.tags import ConnectsTo, IsBlocking
+from game.tags import ConnectsTo, IsBlocking, BlocksFOV
 from game.message_log import log
 from game.text import Text
 import game.colors as colors
@@ -28,10 +28,12 @@ class DoorInteract(OnInteract):
 def toggle_door(door: Entity):
     if IsBlocking in door.tags:
         door.tags.remove(IsBlocking)
+        door.tags.remove(BlocksFOV)
         door.components[Graphic].ch = ord("-")
         return False
     else:
         door.tags.add(IsBlocking)
+        door.tags.add(BlocksFOV)
         door.components[Graphic].ch = ord("+")
         return True
 
@@ -42,7 +44,7 @@ def place_door(pos: Position, open = False, clrs: tuple[tuple[int,int,int],tuple
             Graphic: Graphic(ord('+'), *clrs if clrs else colors.DOOR),
             OnInteract: DoorInteract(),
         },
-        tags=[IsBlocking]
+        tags=[IsBlocking, BlocksFOV]
     )
     if open:
         toggle_door(door)
