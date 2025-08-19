@@ -220,7 +220,7 @@ class ViewInventoryMenu(ItemList):
             no_items_text='You are carrying nothing.'
         )
     def get_items(self):
-        return inventory(g.player)
+        return list(inventory(g.player))
 
 
 class PickupItemsMenu(ItemList):
@@ -241,7 +241,7 @@ class DropItemsMenu(ItemList):
             no_items_text='You are carrying nothing.'
         )
     def get_items(self):
-        return inventory(g.player)
+        return list(inventory(g.player))
 
 
 class EquipOrUnequipItemMenu(ItemList):
@@ -252,7 +252,7 @@ class EquipOrUnequipItemMenu(ItemList):
             no_items_text='You have nothing to equip or unequip.'
         )
     def get_items(self):
-        return inventory(g.player, components=[EquipmentSlot])
+        return list(inventory(g.player).all_of(components=[EquipmentSlot]))
 
 class ConsumeItemsMenu(ItemList):
     def __init__(self):
@@ -262,7 +262,7 @@ class ConsumeItemsMenu(ItemList):
             no_items_text='You have nothing to use.'
         )
     def get_items(self):
-        return inventory(g.player, components=[OnConsume])
+        return list(inventory(g.player).all_of(components=[OnConsume]))
 
 
 class TextRowsView(State):

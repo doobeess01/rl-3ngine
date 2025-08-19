@@ -35,17 +35,17 @@ def give_duration_effect(actor: Entity, effect: DurationEffect):
 
 # Item tools
 
-def inventory(entity: Entity, components: list = [], tags: list[str] = []):
+def inventory(entity: Entity):
     '''
     Return the inventory of an entity (all items with the IsIn relation to it)
     '''
-    return [e for e in g.registry.Q.all_of(relations=[(CarriedBy, entity)], components=components, tags=tags)]
+    return g.registry.Q.all_of(relations=[(CarriedBy, entity)])
 
 def add_to_inventory(item: Entity, actor: Entity):
     '''
     Add an item to an entity's inventory. This modifies the entities' CarriedBy relation.
     '''
-    stackable_inventory = inventory(actor, tags=[IsStackable])
+    stackable_inventory = list(inventory(actor).all_of(tags=[IsStackable]))
     for other_item in stackable_inventory:
         if other_item.relation_tag[IsA] == item.relation_tag[IsA]:
             other_item.components[Quantity] += item.components[Quantity]
@@ -73,7 +73,7 @@ def drop(item: Entity):
 
 def equip(item: Entity, actor: Entity):
     slot = item.components[EquipmentSlot]
-    for equipped_item in inventory(actor, components=[EquipmentSlot], tags=[Equipped]):
+    for equipped_item in list(inventory(actor).all_of(components=[EquipmentSlot], tags=[Equipped])):
         if slot == equipped_item.components[EquipmentSlot]:
             equipped_item.tags.remove(Equipped)
     item.tags.add(Equipped)
@@ -113,8 +113,8 @@ def on_hp_change(entity: Entity, old: int | None, new: int | None):
 
 @callbacks.register_component_changed(component=int)
 def on_time_advance(entity: Entity, old: int | None, new: int | None) -> None:
-    assert entity == g.registry[None]  # Only the registry should have a time component
+    assert entity == entity.registry[None]  # Only the registry should have a time component
     if old:
-        for e in [e for e in g.registry.Q.all_of(components=[DurationEffects])]:
+        for e in g.registry.Q.all_of(components=[DurationEffects]):
             if not e.components[DurationEffects](e):
                 del e.components[DurationEffects]
