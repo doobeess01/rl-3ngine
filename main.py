@@ -9,9 +9,7 @@ from game.controller import Controller
 
 CONSOLE_DIMENSIONS = (55,50)
 
-THIS_DIR = Path(__file__, "..")
-FONT = THIS_DIR / 'assets/Alloy_curses_12x12.png'
-
+FONT = Path(__file__).parent / 'assets/Alloy_curses_12x12.png'
 
 def draw():
     g.console.clear()
